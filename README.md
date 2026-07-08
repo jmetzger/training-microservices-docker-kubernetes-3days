@@ -22,6 +22,12 @@
      * [Remote-Verbindung zu Kubernetes einrichten](/kubectl/kubectl-einrichten.md)
      * [Tool zum Konvertion von docker-compose.yaml file manifesten](/tools/kompose.md) 
 
+  1. Kubernetes (Debugging)
+     * [Netzwerkverbindung zu pod testen](/tipps-tricks/verbindung-zu-pod-testen.md)
+    
+  1. Kubernetes Netzwerk 
+     * [DNS - Resolution - Services](kubernetes-networks/dns-resolution-services.md)
+
   1. Kubernetes Praxis API-Objekte 
      * [Das Tool kubectl (Devs/Ops) - Spickzettel](/kubectl/spickzettel.md)
      * [kubectl example with run](/kubectl/run-with-example.md)
@@ -212,12 +218,6 @@
      * [Performance comparison - baseline,sidecar,ambient](/istio/overview/performance-comparison-baseline-sidecar-ambient.md)
      * [Übung: JWT-Token mit RBAC (RequestAuthentication + AuthorizationPolicy)](istio/12-jwt-rbac.md)
       
-  1. Kubernetes (Debugging)
-     * [Netzwerkverbindung zu pod testen](/tipps-tricks/verbindung-zu-pod-testen.md)
-    
-  1. Kubernetes Netzwerk 
-     * [DNS - Resolution - Services](kubernetes-networks/dns-resolution-services.md)
-
   1. Kubernetes NetworkPolicy
      * [NetworkPolicy - Pod-Traffic absichern (CIS 5.3)](kubernetes-networkpolicy/networkpolicy-exercise.md)
      * [Debugging: FE zu Backend Verbindungen mit kubectl debug und NetworkPolicy](kubernetes-networkpolicy/20-debug-networkpolicy.md)
