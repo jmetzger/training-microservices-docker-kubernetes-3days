@@ -2,6 +2,13 @@
 
 ## Agenda 
 
+ 1. Docker-Grundlagen 
+     * [Übersicht Architektur](architektur.md)
+     * [Was ist ein Container ?](container.md)
+     * [Was sind container images](container-images.md) 
+     * [Container vs. Virtuelle Maschine](container-vs-vm.md)
+     * [Was ist ein Dockerfile](dockerfile.md) 
+
   1. Grundlagen
      * [Microservices-Trends 2026](microservices/trends-2026.md)
      * [Was sind Microservices ?](microservices/what-are.md)
