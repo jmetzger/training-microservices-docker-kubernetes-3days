@@ -9,6 +9,15 @@
      * [Container vs. Virtuelle Maschine](container-vs-vm.md)
      * [Was ist ein Dockerfile](dockerfile.md) 
 
+ 1. Kubernetes - Überblick
+     * [Warum Kubernetes, was macht Kubernetes](warum-kubernetes.md) 
+     * [Aufbau Allgemein](/kubernetes/architecture.md)
+     * [Structure Kubernetes Deep Dive](https://github.com/jmetzger/training-kubernetes-advanced/assets/1933318/1ca0d174-f354-43b2-81cc-67af8498b56c)
+     * [Ausbaustufen Kubernetes](installer/kubernetes-ausbaustufen.md)
+     * [Aufbau mit helm,OpenShift,Rancher(RKE),microk8s](/kubernetes/aufbau-helm-microk8s-kubernetes.md)
+     * [Welches System ? (minikube, micro8ks etc.)](welches-system.md)
+
+
   1. Grundlagen
      * [Microservices-Trends 2026](microservices/trends-2026.md)
      * [Was sind Microservices ?](microservices/what-are.md)
@@ -143,14 +152,6 @@
   1. Microservice - flightapp - Uebungen: Manuell in Kubernetes deployen
      * [Uebung: ms-reservations manuell deployen und Service erstellen](microservices-flightapp/deploy-to-kubernetes/03-reservations-manual.md)
      * [Loesung: Service fuer ms-reservations](microservices-flightapp/deploy-to-kubernetes/03-reservations-manual-loesung.md)
-
-  1. Kubernetes - Überblick
-     * [Warum Kubernetes, was macht Kubernetes](warum-kubernetes.md) 
-     * [Aufbau Allgemein](/kubernetes/architecture.md)
-     * [Structure Kubernetes Deep Dive](https://github.com/jmetzger/training-kubernetes-advanced/assets/1933318/1ca0d174-f354-43b2-81cc-67af8498b56c)
-     * [Ausbaustufen Kubernetes](installer/kubernetes-ausbaustufen.md)
-     * [Aufbau mit helm,OpenShift,Rancher(RKE),microk8s](/kubernetes/aufbau-helm-microk8s-kubernetes.md)
-     * [Welches System ? (minikube, micro8ks etc.)](welches-system.md)
 
   1. Kubernetes - Einsatz
      * [Kubernetes Einsatz -> Risiken](kubernetes/risks.md)
