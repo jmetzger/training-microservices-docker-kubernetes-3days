@@ -90,20 +90,7 @@
       * [End-to-End - e2e - Tests](microservices/tests/06-testing-e2e.md)
       * [Integration in GitLab CI/CD](microservices/tests/07-testing-ci-cd-gitlab.md)
 
-  1. Linux Tipps & Tricks
-     * [In den Root-Benutzer wechseln](sudo.md)
-   
-  1. Docker-Installation
-     * [BEST for Ubuntu : Install Docker from Docker Repo](install-docker-ubuntu-apt.md)
-
-  1. Docker-Praxis
-     * [Docker run mit nginx](docker-run-nginx.md)
-     * [Die wichtigsten Befehle](docker-befehle.md)
-     * [Aufräumen - container und images löschen](prune-container-images.md)
-     * [Logs des Host-Systems zu den Containern auslesen](journalctl-u-docker.md)
-     * [Logs anschauen - docker logs - mit Beispiel nginx](docker-logs-nginx.md)
-     * [Nginx mit portfreigabe laufen lassen](docker-example-nginx.md)
-    
+ 
   1. Example with Dockerfile
      * [Ubuntu mit ping](ubuntu-ping.md)
      * [Slim multistage-build](slim-multistage-build.md)
@@ -276,6 +263,22 @@
      * [Docker image bauen mit fastapi (python) und kaniko](gitlab-ci-cd/02-simple-example-create-image-with-fastapi.md)
        
 ## Backlog
+
+  1. Linux Tipps & Tricks
+     * [In den Root-Benutzer wechseln](sudo.md)
+   
+  1. Docker-Installation
+     * [BEST for Ubuntu : Install Docker from Docker Repo](install-docker-ubuntu-apt.md)
+
+  1. Docker-Praxis
+     * [Docker run mit nginx](docker-run-nginx.md)
+     * [Die wichtigsten Befehle](docker-befehle.md)
+     * [Aufräumen - container und images löschen](prune-container-images.md)
+     * [Logs des Host-Systems zu den Containern auslesen](journalctl-u-docker.md)
+     * [Logs anschauen - docker logs - mit Beispiel nginx](docker-logs-nginx.md)
+     * [Nginx mit portfreigabe laufen lassen](docker-example-nginx.md)
+    
+
  
   1. Praxis Microservices ohne Docker und Kubernetes 
      * [Schritt 1: Nodejs aufsetzen](microservices/exercise/01-node.md)
