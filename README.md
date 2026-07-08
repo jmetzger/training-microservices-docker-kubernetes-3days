@@ -22,6 +22,50 @@
      * [Remote-Verbindung zu Kubernetes einrichten](/kubectl/kubectl-einrichten.md)
      * [Tool zum Konvertion von docker-compose.yaml file manifesten](/tools/kompose.md) 
 
+  1. Kubernetes Praxis API-Objekte 
+     * [Das Tool kubectl (Devs/Ops) - Spickzettel](/kubectl/spickzettel.md)
+     * [kubectl example with run](/kubectl/run-with-example.md)
+     * [Bauen einer Applikation mit Resource Objekten](bauen-einer-webanwendung.md)
+     * [Anatomie einer Webanwendung](anatomie-einer-webanwendung.md)
+     * [kubectl/manifest/pod](/kubectl-examples/01-pod-nginx.md)
+     * ReplicaSets (Theorie) - (Devs/Ops)
+     * [kubectl/manifest/replicaset](/kubectl-examples/01a-replicaset-nginx.md)
+     * Deployments (Devs/Ops)
+     * [kubectl/manifest/deployments](/kubectl-examples/03-nginx-deployment.md)
+     * [Services - Aufbau](/kubernetes/services-aufbau.md)
+     * [kubectl/manifest/service](/kubectl-examples/03b-service.md)
+     * DaemonSets (Devs/Ops)
+     * [Hintergrund Ingress](/kubernetes/ingress.md)
+     * [Ingress Controller auf Digitalocean (doks) mit helm installieren](/digitalocean/ingress-auf-digitalocean-mit-helm.md)
+     * [Documentation for default ingress nginx](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/)
+     * [Beispiel Ingress](/kubectl-examples/04-ingress-nginx.md)
+     * [Install Ingress On Digitalocean DOKS](/digitalocean/install-ingress-helm.md)
+     * [Beispiel Ingress mit Hostnamen](/kubectl-examples/04-ingress-nginx-with-hostnames.md)
+     * [Achtung: Ingress mit Helm - annotations](/ingress-mit-helm-class-achtung.md)
+     * [Permanente Weiterleitung mit Ingress](/kubectl-examples/05-ingress-permanent-redirect.md)
+     * [ConfigMap Example](/kubectl-examples/06-configmap.md)
+     * [Configmap MariaDB - Example](kubectl-examples/06a-configmap-mariadb.md)
+     * [Configmap MariaDB my.cnf](kubectl-examples/06b-mariadb-configmap-configfile.md)
+     * [Secret MariaDB - Example](kubectl-examples/07-mariadb-secret.md)
+     * [Secrets aus HashiCorp Vault - 3 Wege](kubernetes-security/vault-secrets-integration.md)
+     * [Security und Compliance im Betrieb von Kubernetes-Clustern](kubernetes-security/security-compliance-betrieb.md)
+
+  1. Kubernetes Praxis (Teil 2) - API Objekte 
+     * [Hintergrund Statefulsets](kubernetes/statefulsets.md)
+     * [Übung Statefulsets](kubectl-examples/10-statefulset.md)
+
+  1. Kubernetes Praxis (Teil 3)
+     * [Using private registry](kubectl-examples/11-pod-private-registry.md)
+
+  1. Kubernetes Ingress
+     * [Ingress Controller on Detail](ingress/ingress-controller-on-detail.md)
+     * [Traefik mit Helm installieren](ingress/traefik/install-with-helm.md)
+     * [Beispiel Ingress Traefik mit Hostnamen](kubectl-examples/04-ingress-traefik-with-hostnames-deployment.md)
+     * [Https/LetsEncrypt mit Traefik](ingress/https-letsencrypt-ingress-traefik.md)
+
+
+
+
   1. Grundlagen
      * [Microservices-Trends 2026](microservices/trends-2026.md)
      * [Was sind Microservices ?](microservices/what-are.md)
@@ -156,46 +200,6 @@
   1. Kubernetes mit k3s
      * [Kubernetes mit k3s](kubernetes/install/k3s/overview.md)
     
-  1. Kubernetes Praxis API-Objekte 
-     * [Das Tool kubectl (Devs/Ops) - Spickzettel](/kubectl/spickzettel.md)
-     * [kubectl example with run](/kubectl/run-with-example.md)
-     * [Bauen einer Applikation mit Resource Objekten](bauen-einer-webanwendung.md)
-     * [Anatomie einer Webanwendung](anatomie-einer-webanwendung.md)
-     * [kubectl/manifest/pod](/kubectl-examples/01-pod-nginx.md)
-     * ReplicaSets (Theorie) - (Devs/Ops)
-     * [kubectl/manifest/replicaset](/kubectl-examples/01a-replicaset-nginx.md)
-     * Deployments (Devs/Ops)
-     * [kubectl/manifest/deployments](/kubectl-examples/03-nginx-deployment.md)
-     * [Services - Aufbau](/kubernetes/services-aufbau.md)
-     * [kubectl/manifest/service](/kubectl-examples/03b-service.md)
-     * DaemonSets (Devs/Ops)
-     * [Hintergrund Ingress](/kubernetes/ingress.md)
-     * [Ingress Controller auf Digitalocean (doks) mit helm installieren](/digitalocean/ingress-auf-digitalocean-mit-helm.md)
-     * [Documentation for default ingress nginx](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/)
-     * [Beispiel Ingress](/kubectl-examples/04-ingress-nginx.md)
-     * [Install Ingress On Digitalocean DOKS](/digitalocean/install-ingress-helm.md)
-     * [Beispiel Ingress mit Hostnamen](/kubectl-examples/04-ingress-nginx-with-hostnames.md)
-     * [Achtung: Ingress mit Helm - annotations](/ingress-mit-helm-class-achtung.md)
-     * [Permanente Weiterleitung mit Ingress](/kubectl-examples/05-ingress-permanent-redirect.md)
-     * [ConfigMap Example](/kubectl-examples/06-configmap.md)
-     * [Configmap MariaDB - Example](kubectl-examples/06a-configmap-mariadb.md)
-     * [Configmap MariaDB my.cnf](kubectl-examples/06b-mariadb-configmap-configfile.md)
-     * [Secret MariaDB - Example](kubectl-examples/07-mariadb-secret.md)
-     * [Secrets aus HashiCorp Vault - 3 Wege](kubernetes-security/vault-secrets-integration.md)
-     * [Security und Compliance im Betrieb von Kubernetes-Clustern](kubernetes-security/security-compliance-betrieb.md)
-
-  1. Kubernetes Praxis (Teil 2) - API Objekte 
-     * [Hintergrund Statefulsets](kubernetes/statefulsets.md)
-     * [Übung Statefulsets](kubectl-examples/10-statefulset.md)
-
-  1. Kubernetes Praxis (Teil 3)
-     * [Using private registry](kubectl-examples/11-pod-private-registry.md)
-
-  1. Kubernetes Ingress
-     * [Ingress Controller on Detail](ingress/ingress-controller-on-detail.md)
-     * [Traefik mit Helm installieren](ingress/traefik/install-with-helm.md)
-     * [Beispiel Ingress Traefik mit Hostnamen](kubectl-examples/04-ingress-traefik-with-hostnames-deployment.md)
-     * [Https/LetsEncrypt mit Traefik](ingress/https-letsencrypt-ingress-traefik.md)
 
   1. ServiceMesh
      * [Istio — Service Mesh Überblick](/istio/istio-overview.md)
