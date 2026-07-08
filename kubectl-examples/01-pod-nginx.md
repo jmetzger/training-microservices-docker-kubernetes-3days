@@ -29,11 +29,16 @@ spec:
 ```
 
 ```
-kubectl apply -f nginx-static.yml 
+kubectl apply -f nginx-static.yml
+kubectl get pods nginx-static-web -o wide
+```
+
+```
+# Debuggen
 kubectl describe pod nginx-static-web 
 # show config 
 kubectl get pod/nginx-static-web -o yaml
-kubectl get pod/nginx-static-web -o wide 
+ 
 ```
 
 ```
