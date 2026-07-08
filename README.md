@@ -17,6 +17,10 @@
      * [Aufbau mit helm,OpenShift,Rancher(RKE),microk8s](/kubernetes/aufbau-helm-microk8s-kubernetes.md)
      * [Welches System ? (minikube, micro8ks etc.)](welches-system.md)
 
+  1. Kubernetes - Client Tools und Verbindung einrichten
+     * [Tools installieren und bash-completion / syntax highlightning](install-helm-kubectl-syntax-highlightning.md)   
+     * [Remote-Verbindung zu Kubernetes einrichten](/kubectl/kubectl-einrichten.md)
+     * [Tool zum Konvertion von docker-compose.yaml file manifesten](/tools/kompose.md) 
 
   1. Grundlagen
      * [Microservices-Trends 2026](microservices/trends-2026.md)
@@ -164,11 +168,6 @@
 
   1. Kubernetes mit k3s
      * [Kubernetes mit k3s](kubernetes/install/k3s/overview.md)
-
-  1. Kubernetes - Client Tools und Verbindung einrichten
-     * [Tools installieren und bash-completion / syntax highlightning](install-helm-kubectl-syntax-highlightning.md)   
-     * [Remote-Verbindung zu Kubernetes einrichten](/kubectl/kubectl-einrichten.md)
-     * [Tool zum Konvertion von docker-compose.yaml file manifesten](/tools/kompose.md) 
     
   1. Kubernetes Praxis API-Objekte 
      * [Das Tool kubectl (Devs/Ops) - Spickzettel](/kubectl/spickzettel.md)
