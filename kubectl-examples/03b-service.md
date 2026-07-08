@@ -84,8 +84,6 @@ kubectl describe svc svc-nginx
 kubectl delete po web-nginx-596cdd7d5c-2lsr6
 kubectl get pods -o wide
 
-kubectl get svc svc-nginx 
-
 # New pod (with pod-ip) is detected by service
 # and now in the list of the endpoints 
 kubectl describe svc svc-nginx 
