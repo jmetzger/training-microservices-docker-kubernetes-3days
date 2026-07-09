@@ -76,6 +76,14 @@
      * [ResourceQuotas and LimitQuotas by Namespace](https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/)
      * [ProjectTemplate auch für Ressourcen in OCP- OpenShift](/kubectl-examples/21-project-template-ocp.md)
 
+  1. Kubernetes - Netzwerk (CNI's) / Mesh
+     * [Netzwerk Interna](/kubernetes-networks/networking-internal-overview.md)
+     * [Übersicht Netzwerke](/kubernetes-networks/overview.md) 
+     * [Calico - nginx example NetworkPolicy](/kubernetes-network/callico/00-simple-example.md)
+     * [Beispiele Ingress Egress NetworkPolicy](kubernetes-networks/examples-ingress-egress.md)
+     * [Kubernetes Ports/Protokolle](https://kubernetes.io/docs/reference/networking/ports-and-protocols/)
+     * [IPV4/IPV6 Dualstack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/)
+
   1. Grundlagen
      * [Microservices-Trends 2026](microservices/trends-2026.md)
      * [Was sind Microservices ?](microservices/what-are.md)
@@ -360,14 +368,7 @@
   1. Kubernetes - RBAC 
      * [Nutzer einrichten microk8s ab kubernetes 1.25](/kubernetes/rbac-create-user-kubernetes-1-25.md) 
  
-  1. Kubernetes - Netzwerk (CNI's) / Mesh
-     * [Netzwerk Interna](/kubernetes-networks/networking-internal-overview.md)
-     * [Übersicht Netzwerke](/kubernetes-networks/overview.md) 
-     * [Calico - nginx example NetworkPolicy](/kubernetes-network/callico/00-simple-example.md)
-     * [Beispiele Ingress Egress NetworkPolicy](kubernetes-networks/examples-ingress-egress.md)
-     * [Kubernetes Ports/Protokolle](https://kubernetes.io/docs/reference/networking/ports-and-protocols/)
-     * [IPV4/IPV6 Dualstack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/)
-   
+    
   1. kubectl 
      * [Start pod (container with run && examples)](/kubectl/run-with-example.md)
      * [Bash completion for kubectl](/kubectl/bash-completion.md)
