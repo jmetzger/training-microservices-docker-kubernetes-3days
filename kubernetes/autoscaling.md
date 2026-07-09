@@ -3,7 +3,15 @@
 ## Example: newest version with autoscaling/v2 used to be hpa/v1
 
 ```
----
+mkdir -p manifests
+cd manifests
+mkdir autoscaler
+cd autoscaler
+nano deploy.yaml
+```
+
+
+```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -54,6 +62,11 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
+```
+
+```
+kubectl apply -f .
+kubectl get deploy,svc,hpa
 ```
 
   * https://docs.digitalocean.com/tutorials/cluster-autoscaling-ca-hpa/
