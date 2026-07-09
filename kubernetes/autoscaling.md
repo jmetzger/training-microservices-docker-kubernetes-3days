@@ -69,7 +69,13 @@ kubectl apply -f .
 kubectl get deploy,svc,hpa
 ```
 
-  * https://docs.digitalocean.com/tutorials/cluster-autoscaling-ca-hpa/
+## Last erzeugen 
+
+```
+kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://hello; done"
+```
+
+
 
 ## Reference 
 
