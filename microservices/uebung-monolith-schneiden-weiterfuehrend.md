@@ -8,36 +8,79 @@
 ## Schritt 3: Context Map zeichnen
 
 > **Warum dieser Schritt?**
-> Contexts interagieren miteinander. Die Context Map zeigt, wer von wem abhaengt
-> und welche Integration-Patterns verwendet werden.
-> Sie macht unsichtbare Kopplungen sichtbar — und damit sichtbar,
-> wo wir anfangen sollten zu schneiden.
+> Jeder Bounded Context arbeitet fuer sich — aber sie muessen trotzdem miteinander reden.
+> Die Context Map zeigt, wer mit wem spricht, wer von wem abhaengt, und wie die Verbindung aussieht.
+> Damit werden unsichtbare Kopplungen sichtbar — und genau dort muss man anfangen, bevor man schneidet.
+
+### Einfaches Beispiel: ShopMax
+
+Stellt euch vor, ihr habt drei Contexts: **Order**, **Notification**, **Inventory**.
+
+```
+  [Order] ---------> [Notification]
+     |
+     +-------------> [Inventory]
+```
+
+- `Order` braucht `Inventory`, um zu pruefen ob ein Produkt noch vorraetigt ist.
+- `Order` braucht `Notification`, um nach einer Bestellung eine E-Mail zu schicken.
+
+Im Monolith: einfach ein Methodenaufruf.  
+Als Microservices: diese Verbindungen muessen ueber Netzwerk laufen — und das hat Konsequenzen.
+
+### Sync vs. Async — warum ist das wichtig?
+
+**Synchron (direkter Aufruf, z.B. REST):**
+
+```
+Order Service  -->  (HTTP POST)  -->  Notification Service
+      ^                                       |
+      |_______________ Antwort ______________|
+```
+
+- `Order` wartet, bis `Notification` antwortet.
+- Wenn `Notification` langsam ist: `Order` ist auch langsam.
+- Wenn `Notification` abstuerzt: schlaegt die Bestellung fehl — obwohl die Bestellung selbst korrekt war.
+- Enge Kopplung: `Order` muss die Adresse von `Notification` kennen.
+
+**Asynchron (Event, z.B. Kafka):**
+
+```
+Order Service  -->  (Event: OrderPlaced)  -->  [Kafka Topic]
+                                                     |
+                                          Notification Service liest
+                                          das Event, wann immer es will
+```
+
+- `Order` publiziert ein Event und ist fertig — es wartet nicht.
+- Wenn `Notification` gerade nicht laeuft: das Event liegt im Topic, bis der Service wieder da ist.
+- Wenn `Notification` langsam ist: `Order` merkt es nicht.
+- Lose Kopplung: `Order` kennt `Notification` gar nicht — es publiziert nur ein Event.
+
+> **Faustregel:** Alles was nicht sofort eine Antwort braucht, sollte asynchron sein.
+> Bestellbestaetigung per E-Mail? Asynchron — der Kunde wartet nicht auf die E-Mail, sondern auf die Bestellbestaeigung.
+> Lagerbestand pruefen? Synchron — ohne diese Antwort kann die Bestellung nicht weitergehen.
 
 ### Aufgabe
 
 Zeichnet die Abhaengigkeiten zwischen euren Contexts aus Schritt 2.
 
-Fuer jede Verbindung: Wer braucht Daten von wem? Wer publiziert Events, wer abonniert sie?
-
-> **Was bedeutet "publiziert"?**
-> Ein Service sendet ein Domain Event auf einen Event Bus (z.B. Kafka).
-> Er interessiert sich nicht dafuer, wer zuhoert — er publiziert einfach.
-> Andere Services *subscriben* selbst auf Events, die sie brauchen.
-> Vorteil: Der Sender hat keine Abhaengigkeit zum Empfaenger.
+Fuer jede Verbindung fragt euch: Wer braucht Daten von wem? Braucht der Sender eine sofortige Antwort — oder reicht ein Event?
 
 ### Integration-Patterns markieren
 
 Tragt fuer jede Verbindung ein, wie die Kommunikation stattfindet:
 
-| Von | Nach | Aktuell (Monolith) | Ziel (Microservices) |
-|---|---|---|---|
-| | | | |
-| | | | |
-| | | | |
-| | | | |
+| Von | Nach | Aktuell (Monolith) | Ziel (Microservices) | Sync oder Async? |
+|---|---|---|---|---|
+| Order | Notification | Methodenaufruf | Event (Kafka) | Async |
+| Order | Inventory | Methodenaufruf | REST API | Sync |
+| | | | | |
+| | | | | |
 
-> **Schluesserkenntnis:** Ueberall wo heute ein *direkter Methodenaufruf* steht,
-> haben wir eine **enge Kopplung**. Diese muss vor dem Schneiden entkoppelt werden.
+> **Schluesserkenntnis:** Ueberall wo heute ein direkter Methodenaufruf steht, haben wir eine enge Kopplung.
+> Die Frage ist nicht nur "wie entkoppeln wir?" — sondern auch "brauchen wir ueberhaupt eine direkte Antwort?"
+> Wenn nein: Event statt API-Call.
 
 ---
 
