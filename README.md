@@ -69,8 +69,11 @@
      * [Beispiel Ingress Traefik mit Hostnamen](kubectl-examples/04-ingress-traefik-with-hostnames-deployment.md)
      * [Https/LetsEncrypt mit Traefik](ingress/https-letsencrypt-ingress-traefik.md)
 
-
-
+  1. Kubernetes Scaling / Resource Management 
+     * [Autoscaling Pods/Deployments](/kubernetes/autoscaling.md)
+     * [Resources and Limits for containers](kubernetes-resource-control/limits-resources.md)
+     * [ResourceQuota und LimitRange im Namespace (Uebung)](kubectl-examples/20-resourcequota-limitrange.md)
+     * [ResourceQuotas and LimitQuotas by Namespace](https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/)
 
   1. Grundlagen
      * [Microservices-Trends 2026](microservices/trends-2026.md)
@@ -221,12 +224,6 @@
   1. Kubernetes NetworkPolicy
      * [NetworkPolicy - Pod-Traffic absichern (CIS 5.3)](kubernetes-networkpolicy/networkpolicy-exercise.md)
      * [Debugging: FE zu Backend Verbindungen mit kubectl debug und NetworkPolicy](kubernetes-networkpolicy/20-debug-networkpolicy.md)
-
-  1. Kubernetes Scaling / Resource Management 
-     * [Autoscaling Pods/Deployments](/kubernetes/autoscaling.md)
-     * [Resources and Limits for containers](kubernetes-resource-control/limits-resources.md)
-     * [ResourceQuota und LimitRange im Namespace (Uebung)](kubectl-examples/20-resourcequota-limitrange.md)
-     * [ResourceQuotas and LimitQuotas by Namespace](https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/)
 
   1. Kubernetes Tipps & Tricks
      * [Oomkiller and maxReadySeconds for safe migration to new pods](tipps-tricks/oomkiller-test-max-ready-seconds.md)
