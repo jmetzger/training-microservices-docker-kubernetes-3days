@@ -82,6 +82,23 @@ kubectl run --rm -it podtester --image=busybox
 / # exit 
 ```
 
+## Recreate test. 
+
+```
+kubectl delete -f .
+kubectl apply -f .
+# Jetzt neue ip's der Pod aber domain -> web-0.nginx und web-1.nginx
+kubectl run --rm -it podtester --image=busybox
+```
+
+```
+/ # ping web-0.nginx
+/ # ping web-1.nginx
+/ # exit 
+```
+
+
+
 ## Referenz 
 
   * https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/
