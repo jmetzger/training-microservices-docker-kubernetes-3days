@@ -159,51 +159,7 @@ Tragt eure Contexts aus Schritt 2 ein und bewertet jeden von 1 (schlecht) bis 5 
 
 ---
 
-## Schritt 5: Anti-Corruption Layer (ACL) einplanen
-
-> **Warum dieser Schritt?**
-> Wenn ein neuer Microservice mit dem alten Monolith kommunizieren muss,
-> soll er **nicht** die interne Sprache des Monolithen uebernehmen.
-> Der ACL uebersetzt zwischen den Modellen — er schuetzt den neuen Service
-> vor der technischen Schuld des Monolithen.
-
-### Beispiel: Notification Service greift auf Kundendaten zu
-
-**Ohne ACL (falsch):**
-
-```
-Notification Service                 Monolith
-      |                                  |
-      |-- GET /internal/user/42 -------> |
-      |<-- { user_id: 42,               |
-      |       usr_mail: "...",           |  Monolith-internes Modell
-      |       created_ts: 1234567 } ---- |  leckt in den neuen Service
-```
-
-**Mit ACL (richtig):**
-
-```
-Notification Service    ACL (Adapter)          Monolith
-      |                      |                     |
-      |-- getRecipient(42) -> |                     |
-      |                      |-- GET /internal/user/42 -->|
-      |                      |<-- { usr_mail, ... } ------|
-      |<-- Recipient{         |  (uebersetzt Monolith-
-      |     email: "...",     |   Modell in eigene Sprache)
-      |     name: "..." } --- |
-```
-
-### Aufgabe
-
-Skizziert fuer den **Notification Service** einen ACL:
-
-1. Welche Daten braucht der Notification Service vom Monolith?
-2. Wie soll das interne Modell des Notification Service aussehen?
-3. Was uebersetzt der ACL?
-
----
-
-## Schritt 6: Datenbankstrategie planen
+## Schritt 5: Datenbankstrategie planen
 
 > **Warum dieser Schritt?**
 > Die **geteilte Datenbank** ist das groesste Hindernis beim Schneiden.
@@ -255,7 +211,7 @@ Wie loest ihr das? *(Hinweis: Outbox Pattern, Saga Pattern)*
 
 ---
 
-## Schritt 7: Den ersten Service ausloesen (praktisch)
+## Schritt 6: Den ersten Service ausloesen (praktisch)
 
 > Jetzt wird es konkret. Wir loesen den **Notification Service** aus dem Monolith.
 
