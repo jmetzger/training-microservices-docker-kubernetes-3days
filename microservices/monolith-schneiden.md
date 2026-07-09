@@ -4,7 +4,9 @@
 
   * Code-Größe 
   * Technische Schnitt 
-  * Amazon: 2 Pizzas, wieviele können sich davon, wie gross kann man team 
+  * Amazon: 2 Pizzas, wieviele können sich davon, wie gross kann man team
+
+## Ginge
   * Microservice wegschmeissen und er müsste in wenigen Tagen oder mehreren Wochen wieder herstellen
 
 ## Wie kann ich schneiden (GUT) ? 
