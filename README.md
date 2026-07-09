@@ -74,6 +74,7 @@
      * [Resources and Limits for containers](kubernetes-resource-control/limits-resources.md)
      * [ResourceQuota und LimitRange im Namespace (Uebung)](kubectl-examples/20-resourcequota-limitrange.md)
      * [ResourceQuotas and LimitQuotas by Namespace](https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/)
+     * [ProjectTemplate auch für Ressourcen in OCP- OpenShift](/kubectl-examples/21-project-template-ocp.md)
 
   1. Grundlagen
      * [Microservices-Trends 2026](microservices/trends-2026.md)
