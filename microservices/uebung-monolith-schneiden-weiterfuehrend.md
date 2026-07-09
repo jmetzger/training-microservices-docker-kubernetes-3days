@@ -92,17 +92,59 @@ Tragt fuer jede Verbindung ein, wie die Kommunikation stattfindet:
 > vorgehen und wie der Monolith dabei weiterlaeuft.
 >
 > **Kriterien fuer den ersten Schnitt:**
-> - Geringer Abhaengigkeiten zu anderen Contexts (wenige Verbindungen in der Context Map)
+> - Wenige Abhaengigkeiten zu anderen Contexts (wenige Verbindungen in der Context Map)
 > - Hoher Business-Wert (z.B. Skalierungsproblem loesen)
 > - Klare Sprache / klare Teamverantwortung
 > - Keine Datenbankfremdzugriffe von anderen Contexts
 
-### Bewertungsmatrix
+### Beispiel: ShopMax
+
+ShopMax hat vier Contexts: Order, Notification, Inventory, Payment.
+
+Welchen schneiden wir zuerst?
+
+| Context | Wenige Abhaeng. | Business-Wert | Klare Verantwort. | Isolierte DB | **Score** |
+|---|---|---|---|---|---|
+| Notification | 5 — nur Order haengt dran | 3 — kein Skalierungsproblem | 5 — ein Team | 4 — eigene Tabelle | **17** |
+| Inventory | 3 — Order + Payment haengen dran | 5 — Flaschenhals bei Sales | 4 — ein Team | 3 — Foreign Keys | **15** |
+| Payment | 2 — alles haengt dran | 5 — kritisch | 3 — zwei Teams | 2 — stark verwoben | **12** |
+| Order | 1 — zentraler Hub | 4 — wichtig | 2 — drei Teams | 1 — ueberall FK | **8** |
+
+**Ergebnis: Notification zuerst** — wenig Abhaengigkeiten, eigene Tabelle, ein Team.
+Payment und Order kommen spaeter, wenn die Erfahrung da ist.
+
+### Migrationsphasen am Beispiel ShopMax
+
+```
+Phase 0 (heute):  [Monolith: Order + Notification + Inventory + Payment]
+
+Phase 1:          [Monolith: Order + Inventory + Payment]
+                  + [Notification Service]
+                  Order publiziert OrderPlaced-Event statt direktem Aufruf
+                  Strangler Proxy leitet /api/notify/* um
+
+Phase 2:          [Monolith: Order + Payment]
+                  + [Notification Service]
+                  + [Inventory Service]
+
+Phase 3:          [Monolith: Order]        <-- noch Payment drin, weil komplex
+                  + [Notification Service]
+                  + [Inventory Service]
+                  + [Payment Service]
+
+Phase 4:          Monolith leer = abgeschaltet
+                  Alle vier Services laufen eigenstaendig
+```
+
+> **Wichtig:** Der Monolith laeuft in jeder Phase weiter und bedient echte Nutzer.
+> Kein "wir schalten alles ab und bauen neu" — das Risiko waere zu gross.
+
+### Aufgabe: Bewertungsmatrix fuer euren Monolith
 
 Tragt eure Contexts aus Schritt 2 ein und bewertet jeden von 1 (schlecht) bis 5 (gut):
 
 > **Skala:** 5 = ideal fuer den ersten Schnitt, 1 = ungeeignet.
-> Bei "Wenige Abhaeng.": 5 = kaum andere Contexts haengen daran (leicht herausloesbar),
+> Bei "Wenige Abhaeng.": 5 = kaum andere Contexts haengen daran,
 > 1 = viele Contexts haengen daran (hohes Risiko).
 
 | Context | Wenige Abhaeng. | Business-Wert | Klare Verantwort. | Isolierte DB | **Score** |
@@ -112,25 +154,8 @@ Tragt eure Contexts aus Schritt 2 ein und bewertet jeden von 1 (schlecht) bis 5 
 | | | | | | |
 | | | | | | |
 | | | | | | |
-| | | | | | |
 
 **Welcher Context hat den hoechsten Score? Das ist euer Startkandidat.**
-
-### Migrationsphasen
-
-Plant anhand eures Startkandiaten, wie der Monolith schrittweise abgeloest wird:
-
-```
-Phase 0 (heute):  [Kompletter Monolith]
-
-Phase 1:          [Monolith ohne Context A] + [Service A]
-                       Strangler Proxy leitet Calls um
-
-Phase 2:          [Monolith ohne A, ohne B] + [Service A] + [Service B]
-
-Phase N:          [letzte Contexts als Services]
-                       Monolith ist "stranguliert" = leer = abgeschaltet
-```
 
 ---
 
