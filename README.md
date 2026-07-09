@@ -101,6 +101,11 @@
      * [Datenbank - Patterns - Teil 1](microservices/database-patterns-teil1.md)
      * [Datenbank - Patterns - Teil 2](microservices/database-patterns-teil2.md)
 
+  1. Umgang mit Transaktionen
+     [Saga Überblick](microservices/databases/patterns/database-per-service/handling-of-transactions.md)
+     [Übung Temporal](/microservices/uebung-saga-temporal.md)
+
+
   1. Übungen: Monolith schneiden
      * [Uebung: Monolith schneiden — DDD, Bounded Contexts und Strangler Fig](microservices/uebung-monolith-schneiden.md)
      * [Auswertung: EventStorming — ShopMax](microservices/uebung-monolith-schneiden-eventstorming-auswertung.md)
