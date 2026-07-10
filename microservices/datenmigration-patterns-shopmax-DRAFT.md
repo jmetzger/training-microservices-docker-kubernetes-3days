@@ -373,6 +373,15 @@ vollstaendig ausgearbeitet in `datenmigration-bestellprozess.md`)
 
 ![Tracer Write: Reihenfolge der Tabellenmigration im Bestellprozess](/images/pattern-tracer-write-shopmax.svg)
 
+**Zum Einstieg — die Analogie:** Fuenf zusammenhaengende Tabellen an einem Stueck zu migrieren
+ist wie ein kompletter Hausumzug an einem einzigen Tag mit einem einzigen LKW — geht irgendwas
+schief (LKW-Panne, Kiste zerbricht), steht die ganze Familie mitten im Chaos, nichts funktioniert
+mehr richtig. Tracer Write heisst: nicht alles auf einmal, sondern **Zimmer fuer Zimmer**. Erst
+die Kueche umziehen (fertig, funktioniert, geprueft), *dann erst* das naechste Zimmer. Jedes
+einzelne "Zimmer umziehen" laeuft dabei nach demselben Rezept ab (das ist Pattern 9 — packen,
+eine Weile beide Wohnungen parallel nutzen, umsteigen, alte Kiste wegwerfen). Tracer Write sagt
+nur: **wiederhole dieses Rezept einmal pro Zimmer, statt einmal fuer das ganze Haus.**
+
 **Ausgangslage:** Anders als bei Notifications (eine Tabelle) haengen beim Bestellprozess
 **fuenf** Tabellen zusammen (`orders`, `order_items`, `payments`, `shipments`, `invoices`) —
 ein einziger großer Sync-Vorgang fuer alle gleichzeitig waere unkontrollierbar riskant.
@@ -380,11 +389,15 @@ ein einziger großer Sync-Vorgang fuer alle gleichzeitig waere unkontrollierbar 
 **Migration:** Pattern 9 (Synchronize Data in Application) wird **nacheinander, Tabelle fuer
 Tabelle** angewendet, in einer durch die Foreign-Key-Richtung erzwungenen Reihenfolge:
 zuerst `orders` (+ mitziehende `order_items`/`shipments`/`invoices`), danach `payments`
-(haengt am `BestellungAufgegeben`-Event aus dem ersten Schritt), zuletzt `customers`.
+(haengt am `BestellungAufgegeben`-Event aus dem ersten Schritt), zuletzt `customers`. In der
+Analogie: Du kannst das Esszimmer nicht umziehen, solange der Esstisch noch in der (noch nicht
+fertig umgezogenen) Kueche zwischengelagert ist — `payments` braucht die Info aus dem Event, das
+es erst gibt, wenn der `orders`-Umzug fertig ist.
 
 **Ergebnis:** Jede Tabelle ist ihr eigener, isoliert testbarer Sync-Vorgang — ein Fehler bei
-`payments` gefaehrdet nicht den bereits abgeschlossenen `orders`-Umzug. Details zur
-Reihenfolge-Begruendung: siehe verlinkte Datei.
+`payments` gefaehrdet nicht den bereits abgeschlossenen `orders`-Umzug, genauso wie ein
+Problem beim Kueche-Umzug nicht automatisch das Wohnzimmer betrifft, das noch gar nicht
+angefasst wurde. Details zur Reihenfolge-Begruendung: siehe verlinkte Datei.
 
 ---
 
