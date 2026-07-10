@@ -87,8 +87,7 @@
      * [Indikatoren für Microservices (Wechsel von Monolith)](microservices/analyse/indikatoren-fuer-wechsel-von-monolith-auf-microservices.md)
      * [Monolith schneiden microservices](microservices/monolith-schneiden.md)
      * [Microservice and Database](microservices/basics/database.md)
-
-
+       
   1. Microservices-Architektur
      * [Architektur von Microservices (Schichten/Layers)](microservices/layers.md)
      * [Was ist devops](/microservices/what-is-devops.md)
@@ -126,6 +125,17 @@
      * [Auswertung: Bounded Contexts — ShopMax](microservices/uebung-monolith-schneiden-boundedcontexts-auswertung.md)
      * [Weiterfuehrende Schritte: Monolith schneiden (Schritt 3–7)](microservices/uebung-monolith-schneiden-weiterfuehrend.md)
      * [Musterloesung: Monolith schneiden mit DDD und Strangler Fig (Trainer)](microservices/uebung-monolith-schneiden-musterloesung.md)
+
+   1. Grundwissen Microservices - Tests (Teil 3)
+      * [Testing-Strategie: Was, wieviel, wann?](microservices/tests/00-testing-uebersicht.md)
+      * [Static Tests](microservices/tests/01-testing-static.md)
+      * [Unit-Tests](microservices/tests/02-testing-unit.md)
+      * [Integration Testing mit Testcontainers](microservices/tests/03-testing-integration-testcontainers.md)
+      * [Contract Testing mit OpenAPI](microservices/tests/04-testing-contract-openapi.md)
+      * [Consumer-Driven Contract Testing mit Pact](microservices/tests/05-testing-contract-pact.md)
+      * [End-to-End - e2e - Tests](microservices/tests/06-testing-e2e.md)
+      * [Integration in GitLab CI/CD](microservices/tests/07-testing-ci-cd-gitlab.md)
+
        
 ## Backlog
 
