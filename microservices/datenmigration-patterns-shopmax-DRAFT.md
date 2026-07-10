@@ -22,10 +22,12 @@ statt rohem DB-Zugriff).
 
 ---
 
-## 1. Split Table
+## 1. Split Table 🔴 Live
 
-**Kategorie:** B — Datenbank wirklich aufteilen
+**Kategorie:** B — Datenbank wirklich aufteilen | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** Product-Service vs. Inventory-Service (real aus ShopMax ableitbar)
+
+![Split Table: products wird in Product-Service und Inventory-Service aufgeteilt](/images/pattern-split-table-shopmax.svg)
 
 ### Ausgangslage
 
@@ -81,10 +83,12 @@ Tabelle sperrten.
 
 ---
 
-## 2. Change Data Ownership
+## 2. Change Data Ownership 🔴 Live
 
-**Kategorie:** A — Zugriff ueber Service-Grenzen, ohne die Datenbank aufzuteilen
+**Kategorie:** A — Zugriff ueber Service-Grenzen, ohne die Datenbank aufzuteilen | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** Inventory-Service uebernimmt Schreibhoheit fuer Lagerbestand (Anschluss an Pattern 1)
+
+![Change Data Ownership: Inventory-Service uebernimmt die Schreibhoheit](/images/pattern-change-data-ownership-shopmax.svg)
 
 ### Ausgangslage
 
@@ -127,12 +131,14 @@ die physische Trennung (Pattern 1) kann sogar vorher oder nachher passieren.
 
 ---
 
-## 3. Move Foreign Key Relationship to Code
+## 3. Move Foreign Key Relationship to Code 🔴 Live
 
-**Kategorie:** B — Datenbank wirklich aufteilen
+**Kategorie:** B — Datenbank wirklich aufteilen | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** `order_items.product_id` verliert den Foreign Key auf `products`, als der
 Product-Service extrahiert wird (real aus `datenmigration-bestellprozess.md`, hier isoliert
 und ausfuehrlicher als eigenstaendiges Beispiel)
+
+![Move Foreign Key Relationship to Code: order_items verliert den physischen FK auf products](/images/pattern-move-fk-to-code-shopmax.svg)
 
 ### Ausgangslage
 
@@ -185,13 +191,15 @@ statt vorher in Ruhe getestet zu werden.
 
 ---
 
-## 4. Static Reference Data Service
+## 4. Static Reference Data Service 🔴 Live
 
-**Kategorie:** C — Gemeinsam genutzte, selten sich aendernde Referenzdaten
+**Kategorie:** C — Gemeinsam genutzte, selten sich aendernde Referenzdaten | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** Waehrungscodes/Laendercodes, gebraucht von Order-, Payment- und
 Shipping-Service (kein direktes Vorbild in den bestehenden ShopMax-Dokumenten — bewusst
 erfunden, weil es das typische "wo gehoeren Referenzdaten hin"-Problem zeigt, das bei drei
 gleichzeitig extrahierten Services zwangslaeufig auftaucht)
+
+![Static Reference Data Service: drei Services fragen einen zentralen Country-Code-Service](/images/pattern-static-reference-data-service-shopmax.svg)
 
 ### Ausgangslage
 
@@ -238,10 +246,13 @@ keine Kleinigkeit.
 
 ---
 
-## 5. Repository per Bounded Context
+## 5. Repository per Bounded Context 🔴 Live
 
-**Kategorie:** B | **ShopMax-Fall:** Vorbereitung fuer den Bestellprozess-Split (real,
+**Kategorie:** B | **Einordnung:** Migration only (Vorstufe, wird durch Pattern 6 abgeloest)
+**ShopMax-Fall:** Vorbereitung fuer den Bestellprozess-Split (real,
 Vorstufe zu `datenmigration-bestellprozess.md`)
+
+![Repository per Bounded Context: Querzugriffe im Code werden gekappt](/images/pattern-repository-per-bounded-context-shopmax.svg)
 
 **Ausgangslage:** Im Monolithen greift jedes Modul quer durch den Code auf `orders`,
 `payments`, `customers` zu — z.B. ruft das Shipping-Modul direkt `orderRepository.findById()`
@@ -258,9 +269,11 @@ Bounded Context gehoeren — Voraussetzung fuer Pattern 6 und jede weitere physi
 
 ---
 
-## 6. Database per Bounded Context
+## 6. Database per Bounded Context 📖 Referenz
 
-**Kategorie:** B | **ShopMax-Fall:** eigene Schemas noch im selben Monolith-Deployment (real,
+**Kategorie:** B | **Einordnung:** Beides möglich — Vorstufe zum physischen Split, kann aber
+auch dauerhaft bleiben, wenn ein Context nie ein eigener Service wird
+**ShopMax-Fall:** eigene Schemas noch im selben Monolith-Deployment (real,
 naechster Schritt nach Pattern 5)
 
 **Ausgangslage:** Nach Pattern 5 ist der Code getrennt, aber `orders`, `payments`,
@@ -278,9 +291,10 @@ weil die Grenze längst existiert.
 
 ---
 
-## 7. Monolith as Data Access Layer
+## 7. Monolith as Data Access Layer 📖 Referenz
 
-**Kategorie:** B | **ShopMax-Fall:** Shipping-Service entsteht neu, hat noch keine eigene DB
+**Kategorie:** B | **Einordnung:** Migration only — ausdruecklich befristet, siehe Nachteil unten
+**ShopMax-Fall:** Shipping-Service entsteht neu, hat noch keine eigene DB
 (real, Vorstufe zur Extraktion)
 
 **Ausgangslage:** Shipping-Service wird als eigenstaendiges Deployment aus dem Monolithen
@@ -298,9 +312,10 @@ Zwischenzustand, kein Zielbild.
 
 ---
 
-## 8. Multischema Storage
+## 8. Multischema Storage 📖 Referenz
 
-**Kategorie:** B | **ShopMax-Fall:** Shipping-Service haelt neue Sendungen selbst, alte noch
+**Kategorie:** B | **Einordnung:** Migration only — explizit Uebergangsphase, kein Zielbild
+**ShopMax-Fall:** Shipping-Service haelt neue Sendungen selbst, alte noch
 im Monolithen (real, Fortsetzung von Pattern 7)
 
 **Ausgangslage:** Shipping-Service (aus Pattern 7) soll jetzt anfangen, selbst Daten zu
@@ -318,10 +333,13 @@ und nur noch eine Quelle uebrig bleibt.
 
 ---
 
-## 9. Synchronize Data in Application
+## 9. Synchronize Data in Application 🔴 Live
 
-**Kategorie:** A | **ShopMax-Fall:** die vier Schritte, konkret am Notification-Service-Fall
+**Kategorie:** A | **Einordnung:** Migration only — ist der Mechanismus selbst, kein Endzustand
+**ShopMax-Fall:** die vier Schritte, konkret am Notification-Service-Fall
 (real, bereits vollstaendig ausgearbeitet in `datenmigration-notification-service.md`)
+
+![Synchronize Data in Application: vier Schritte am Notification-Service-Beispiel](/images/pattern-synchronize-data-in-application-shopmax.svg)
 
 **Ausgangslage:** `notifications` liegt in der Monolith-DB mit Foreign Keys auf `users` und
 `orders`. Notification-Service soll eine eigene, FK-freie DB bekommen.
@@ -341,10 +359,13 @@ rueckrollbar. Details inkl. SQL und Outbox-Absicherung: siehe verlinkte Datei.
 
 ---
 
-## 10. Tracer Write
+## 10. Tracer Write 🔴 Live
 
-**Kategorie:** A | **ShopMax-Fall:** die Reihenfolge im Bestellprozess-Split (real, bereits
+**Kategorie:** A | **Einordnung:** Migration only — Klammer um Pattern 9, kein Endzustand
+**ShopMax-Fall:** die Reihenfolge im Bestellprozess-Split (real, bereits
 vollstaendig ausgearbeitet in `datenmigration-bestellprozess.md`)
+
+![Tracer Write: Reihenfolge der Tabellenmigration im Bestellprozess](/images/pattern-tracer-write-shopmax.svg)
 
 **Ausgangslage:** Anders als bei Notifications (eine Tabelle) haengen beim Bestellprozess
 **fuenf** Tabellen zusammen (`orders`, `order_items`, `payments`, `shipments`, `invoices`) —
@@ -361,10 +382,14 @@ Reihenfolge-Begruendung: siehe verlinkte Datei.
 
 ---
 
-## 11. Database View
+## 11. Database View 🔴 Live
 
-**Kategorie:** A | **ShopMax-Fall:** Cart-Service braucht Lesezugriff auf Produktdaten, bevor
+**Kategorie:** A | **Einordnung:** meist Migration only — kann als bewusster Kompromiss bleiben,
+wenn der volle Split nie kommt, ist aber nicht als Dauerloesung gedacht
+**ShopMax-Fall:** Cart-Service braucht Lesezugriff auf Produktdaten, bevor
 Product-Service eine echte API hat (real, Vorstufe zur Produkt-Extraktion)
+
+![Database View: Cart-Service liest nur eine eingeschraenkte View auf products](/images/pattern-database-view-shopmax.svg)
 
 **Ausgangslage:** Cart-Service ist neu entstanden und muss Preis/Verfuegbarkeit anzeigen —
 `products` liegt noch komplett im Monolithen, eine volle API existiert noch nicht.
@@ -384,9 +409,10 @@ echte API (und spaeter Change Data Ownership) die View, statt sie dauerhaft zu p
 
 ---
 
-## 12. Database-as-a-Service Interface
+## 12. Database-as-a-Service Interface 📖 Referenz
 
-**Kategorie:** A | **ShopMax-Fall:** Legacy-BI-Tool fuer Bestellreports (erfunden — kein
+**Kategorie:** A | **Einordnung:** Dauerlösung möglich — solange der Legacy-Client SQL braucht
+**ShopMax-Fall:** Legacy-BI-Tool fuer Bestellreports (erfunden — kein
 Vorbild in ShopMax, aber ein typischer Fall, sobald ein Unternehmen ein bestehendes
 Reporting-Tool hat, das nur SQL spricht)
 
@@ -404,9 +430,11 @@ muss — die beiden Datenbanken sind komplett entkoppelt.
 
 ---
 
-## 13. Database Wrapping Service
+## 13. Database Wrapping Service 📖 Referenz
 
-**Kategorie:** A | **ShopMax-Fall:** direkter SQL-Zugriff auf `orders` unterbinden, bevor der
+**Kategorie:** A | **Einordnung:** Beides möglich — Zwischenschritt vor vollem Split, oder
+Dauerlösung, wenn die DB gar nicht wandern soll, nur kontrolliert bleiben
+**ShopMax-Fall:** direkter SQL-Zugriff auf `orders` unterbinden, bevor der
 Bestellprozess-Split beginnt (real, fruehe Vorstufe zu `datenmigration-bestellprozess.md`)
 
 **Ausgangslage:** Mehrere Module im Monolithen (Shipping, Invoicing) greifen historisch
@@ -424,9 +452,10 @@ unbemerkt andere Module brechen.
 
 ---
 
-## 14. Aggregate Exposing Monolith
+## 14. Aggregate Exposing Monolith 📖 Referenz
 
-**Kategorie:** A | **ShopMax-Fall:** Shipping-Service in der Fruehphase, bevor er Ownership
+**Kategorie:** A | **Einordnung:** Migration only — explizit Uebergangsphase, siehe Ergebnis unten
+**ShopMax-Fall:** Shipping-Service in der Fruehphase, bevor er Ownership
 uebernimmt (real, Ergaenzung zu Pattern 7)
 
 **Ausgangslage:** Shipping-Service ist gerade erst entstanden. Noch ist unklar, welche
@@ -445,9 +474,10 @@ ist keine Dauerloesung.
 
 ---
 
-## 15. Duplicate Static Reference Data
+## 15. Duplicate Static Reference Data 📖 Referenz
 
-**Kategorie:** C | **ShopMax-Fall:** Versandmethoden-Codes (STANDARD, EXPRESS, PICKUP), real
+**Kategorie:** C | **Einordnung:** Dauerlösung
+**ShopMax-Fall:** Versandmethoden-Codes (STANDARD, EXPRESS, PICKUP), real
 plausibel, im Kontrast zu Pattern 4 (Waehrungscodes)
 
 **Ausgangslage:** Order-, Shipping- und Payment-Service brauchen alle die Liste gueltiger
@@ -465,9 +495,11 @@ hier mit "nein" beantwortet — bei Steuersaetzen mit "ja, sofort, und es kostet
 
 ---
 
-## 16. Static Dedicated Reference Data Schema
+## 16. Static Dedicated Reference Data Schema 📖 Referenz
 
-**Kategorie:** C | **ShopMax-Fall:** die Vorstufe zu Pattern 4 — bevor Country-Code-Service
+**Kategorie:** C | **Einordnung:** Dauerlösung möglich — oder Zwischenschritt zu Pattern 4,
+je nachdem wie kritisch die Konsistenzanforderung wird
+**ShopMax-Fall:** die Vorstufe zu Pattern 4 — bevor Country-Code-Service
 entstand (erfunden als Zwischenschritt, um die Eskalationsstufe zu zeigen)
 
 **Ausgangslage:** ShopMax hat gerade erkannt, dass die reine Kopie (Pattern 15) fuer
@@ -486,9 +518,10 @@ Umstieg auf Pattern 4 (Static Reference Data Service) mit echter API statt SQL-Z
 
 ---
 
-## 17. Static Reference Data Library
+## 17. Static Reference Data Library 📖 Referenz
 
-**Kategorie:** C | **ShopMax-Fall:** Bestellstatus-Codes als gemeinsame Java-Bibliothek (real,
+**Kategorie:** C | **Einordnung:** Dauerlösung — solange der Stack einsprachig bleibt
+**ShopMax-Fall:** Bestellstatus-Codes als gemeinsame Java-Bibliothek (real,
 da ShopMax laut Monolith-schneiden-Uebung durchgaengig Java/Spring Boot ist)
 
 **Ausgangslage:** `order_status`-Werte (NEU, BEZAHLT, VERSENDET, ABGESCHLOSSEN, STORNIERT)
@@ -507,7 +540,7 @@ und Pattern 4 (Service statt Library) waere die robustere Wahl.
 
 ---
 
-## Stand: alle 18 durch
+## Stand
 
 7 Patterns bleiben auf realen ShopMax-Bezuegen (1, 3, 5, 6, 7, 8, 9, 10, 11, 13, 17 — direkt
 aus der Monolith-schneiden-Uebung oder den zwei bestehenden Migrationsdokumenten ableitbar),
@@ -518,16 +551,59 @@ Pattern 9 und 10 (Synchronize Data in Application, Tracer Write) verweisen bewus
 zwei bestehenden Dateien statt sie zu duplizieren — die liefern bereits SQL-Details und
 Reihenfolge-Begruendung in voller Tiefe.
 
+**Entschieden (gemaess Empfehlung):**
+- Die 18 Karten **ergaenzen** die bestehenden `database-patterns/*.md`-Dateien, ersetzen sie nicht.
+- **8 Patterns live in der Session** (🔴 markiert): 5 → 11 → 2 → 1 → 3 → 9 → 10 → 4 — das ist
+  die Erzaehlung "Code vorbereiten → leichte Zwischenloesung → Ownership klaeren → physisch
+  aufteilen → FK aufloesen → die Migrationsmechanik → Reihenfolge bei mehreren Tabellen →
+  Referenzdaten-Sonderfall". Die restlichen 10 (📖 markiert) bleiben Nachschlagewerk.
+- Die zwei bestehenden Gesamtbeispiel-Dateien bleiben erhalten, als kombiniertes Beispiel
+  ans Ende gestellt, nachdem die Einzelpatterns bekannt sind.
+
+## Klassifizierung: Migration only vs. Dauerlösung möglich
+
+| # | Pattern | Einordnung |
+|---|---|---|
+| 1 | Split Table | Dauerlösung |
+| 2 | Change Data Ownership | Dauerlösung |
+| 3 | Move Foreign Key Relationship to Code | Dauerlösung |
+| 4 | Static Reference Data Service | Dauerlösung |
+| 5 | Repository per Bounded Context | Migration only |
+| 6 | Database per Bounded Context | Beides möglich |
+| 7 | Monolith as Data Access Layer | Migration only |
+| 8 | Multischema Storage | Migration only |
+| 9 | Synchronize Data in Application | Migration only |
+| 10 | Tracer Write | Migration only |
+| 11 | Database View | meist Migration only |
+| 12 | Database-as-a-Service Interface | Dauerlösung möglich |
+| 13 | Database Wrapping Service | Beides möglich |
+| 14 | Aggregate Exposing Monolith | Migration only |
+| 15 | Duplicate Static Reference Data | Dauerlösung |
+| 16 | Static Dedicated Reference Data Schema | Dauerlösung möglich |
+| 17 | Static Reference Data Library | Dauerlösung |
+
+## SVG-Grafiken — Stand
+
+Alle 8 Live-Patterns haben jetzt eine Grafik, im Stil an `monolith-schneiden-diagramm.svg`
+angelehnt (gleiche Farbklassen, Schrift, Pfeil-Marker), Diagrammtyp je nach Pattern gewaehlt
+statt strikt einheitlich:
+
+- ✅ 1 Split Table — `pattern-split-table-shopmax.svg` (Tabellen-Boxen, Spalten sichtbar)
+- ✅ 2 Change Data Ownership — `pattern-change-data-ownership-shopmax.svg` (Vorher/Nachher-Fluss)
+- ✅ 3 Move FK to Code — `pattern-move-fk-to-code-shopmax.svg` (Constraint durchgestrichen vs. Code-Check)
+- ✅ 4 Static Reference Data Service — `pattern-static-reference-data-service-shopmax.svg` (Stern-vs-Hub-Topologie)
+- ✅ 5 Repository per Bounded Context — `pattern-repository-per-bounded-context-shopmax.svg` (Querzugriff vs. gekapselt)
+- ✅ 9 Synchronize Data in Application — `pattern-synchronize-data-in-application-shopmax.svg` (4-Phasen-Flow)
+- ✅ 10 Tracer Write — `pattern-tracer-write-shopmax.svg` (Sequenz-Zeitstrahl)
+- ✅ 11 Database View — `pattern-database-view-shopmax.svg` (verbotener Direktzugriff vs. View)
+
+Die 10 Referenz-Patterns haben bewusst keine SVG — sie sind nicht fuer die Live-Praesentation
+vorgesehen, Text reicht dort als Nachschlagewerk.
+
 ## Offene Fragen zur Bewertung
 
-- Passt die durchgehende Tiefe (Ausgangslage / Migration / Ergebnis, ~35-45 Zeilen) fuer
-  einen Praesentations-Foliensatz, oder ist das immer noch zu viel Lesestoff fuer 18 Karten
-  am Stueck? Alternative waere z.B. nur 6-8 Karten live vorzustellen und den Rest als
-  Nachschlagewerk zu behandeln.
-- Wie sollen die 18 Karten in die bestehende Struktur einsortiert werden — ersetzt jede Karte
-  den Inhalt der jeweiligen `microservices/database-patterns/*.md`-Datei direkt, oder bleiben
-  die abstrakten Pattern-Definitionen dort stehen und diese Datei wird eine ergaenzende
-  "ShopMax wendet es an"-Sicht, auf die von dort verlinkt wird?
-- Die Kategorie-D-Tabelle in `microservices/databases/patterns/overview.md` muesste um die
-  neue Shared-Database-Positionierung (Status quo statt Auswahloption) angepasst werden —
-  soll ich das gleich mit erledigen, sobald das Gesamtformat steht?
+- Grafiken bitte gegenlesen — insbesondere Pattern 4 (Stern-Topologie) und Pattern 9
+  (4-Phasen-Flow) sind inhaltlich am dichtesten, dort am ehesten pruefen, ob auf einen Blick
+  verstaendlich.
+- Reihenfolge der Live-Praesentation (5 → 11 → 2 → 1 → 3 → 9 → 10 → 4) so lassen, oder
+  passt eine andere Erzaehl-Reihenfolge besser zum Rest der Session?

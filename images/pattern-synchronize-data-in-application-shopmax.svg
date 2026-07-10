@@ -1,0 +1,51 @@
+<svg width="700" viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Synchronize Data in Application: vier Schritte am Notification-Service-Beispiel</title>
+<desc>Vier aufeinanderfolgende Zustaende: Bulk-Sync, Dual Write mit Read aus der alten DB, Dual Write mit Read aus der neuen DB, alte Tabelle entfernt.</desc>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.th { font-size: 14px; font-weight: 500; fill: #2C2C2A; }
+.ts { font-size: 12px; fill: #5F5E5A; }
+.tc { font-size: 11px; fill: #5F5E5A; }
+.arr { stroke: #888780; stroke-width: 1.5; fill: none; }
+.c-gray > rect { fill: #F1EFE8; stroke: #5F5E5A; stroke-width: 0.5; }
+.c-gray .th { fill: #444441; }
+.c-blue > rect { fill: #E6F1FB; stroke: #185FA5; stroke-width: 0.5; }
+.c-blue .th { fill: #0C447C; }
+.c-teal > rect { fill: #E1F5EE; stroke: #0F6E56; stroke-width: 0.5; }
+.c-teal .th { fill: #085041; }
+</style>
+<defs>
+  <marker id="a5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<text class="th" x="30" y="24">1. Bulk-Sync</text>
+<text class="ts" x="150" y="24">historische Daten per Backfill kopieren</text>
+<g class="c-gray"><rect x="30" y="35" width="160" height="38" rx="6"/><text class="ts" x="110" y="58" text-anchor="middle" dominant-baseline="central">alte notifications</text></g>
+<line x1="190" y1="54" x2="440" y2="54" class="arr" marker-end="url(#a5)"/>
+<text class="tc" x="210" y="44">Backfill (einmalig)</text>
+<g class="c-teal"><rect x="445" y="35" width="180" height="38" rx="6"/><text class="ts" x="535" y="58" text-anchor="middle" dominant-baseline="central">neue notifications</text></g>
+
+<text class="th" x="30" y="112">2. Dual Write, Read alt</text>
+<text class="ts" x="200" y="112">App schreibt in beide, liest weiter alt</text>
+<g class="c-blue"><rect x="30" y="123" width="140" height="38" rx="6"/><text class="ts" x="100" y="146" text-anchor="middle" dominant-baseline="central">Anwendung</text></g>
+<line x1="170" y1="135" x2="440" y2="135" class="arr" marker-end="url(#a5)"/>
+<line x1="170" y1="155" x2="440" y2="155" class="arr" marker-end="url(#a5)" stroke-dasharray="3 3"/>
+<g class="c-gray"><rect x="445" y="117" width="180" height="30" rx="6"/><text class="tc" x="535" y="132" text-anchor="middle" fill="#0C447C" font-weight="600">Read ⟵ alt</text></g>
+<g class="c-teal"><rect x="445" y="150" width="180" height="30" rx="6"/><text class="tc" x="535" y="165" text-anchor="middle">Write (Kopie)</text></g>
+
+<text class="th" x="30" y="212">3. Dual Write, Read neu</text>
+<text class="ts" x="200" y="212">Reads wechseln — neu ist Quelle der Wahrheit</text>
+<g class="c-blue"><rect x="30" y="223" width="140" height="38" rx="6"/><text class="ts" x="100" y="246" text-anchor="middle" dominant-baseline="central">Anwendung</text></g>
+<line x1="170" y1="235" x2="440" y2="235" class="arr" marker-end="url(#a5)" stroke-dasharray="3 3"/>
+<line x1="170" y1="255" x2="440" y2="255" class="arr" marker-end="url(#a5)"/>
+<g class="c-gray"><rect x="445" y="217" width="180" height="30" rx="6"/><text class="tc" x="535" y="232" text-anchor="middle">Write (Kopie)</text></g>
+<g class="c-teal"><rect x="445" y="250" width="180" height="30" rx="6"/><text class="tc" x="535" y="265" text-anchor="middle" fill="#085041" font-weight="600">Read ⟵ neu</text></g>
+
+<text class="th" x="30" y="312">4. Cleanup</text>
+<text class="ts" x="130" y="312">alte Tabelle entfernen</text>
+<g class="c-gray" opacity="0.4"><rect x="30" y="323" width="160" height="38" rx="6" stroke-dasharray="4 3"/><text class="tc" x="110" y="346" text-anchor="middle">DROP TABLE (alt)</text></g>
+<line x1="190" y1="342" x2="440" y2="342" class="arr" stroke-dasharray="2 4"/>
+<g class="c-teal"><rect x="445" y="323" width="180" height="38" rx="6"/><text class="th" x="535" y="346" text-anchor="middle" dominant-baseline="central">notifications</text></g>
+</svg>
