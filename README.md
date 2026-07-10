@@ -107,6 +107,11 @@
      * [Saga Überblick](microservices/databases/patterns/database-per-service/handling-of-transactions.md)
      * [Übung Temporal](/microservices/uebung-saga-temporal.md)
 
+  1. Kafka Schema Registry
+     * [Schema Registry - Konzept](async-messaging/03-schema-registry.md)
+     * [Übung: Kafka Schema Registry mit Avro (Kubernetes)](async-messaging/kafka-schema-registry.md)
+     * [Übung: Producer/Consumer mit und ohne Schema Registry (Java, Kubernetes)](async-messaging/04-uebung-avro-vs-plain.md)
+
   1. MicroServices und die Datenbank
      * [Microservice and Database](microservices/basics/database.md)
 

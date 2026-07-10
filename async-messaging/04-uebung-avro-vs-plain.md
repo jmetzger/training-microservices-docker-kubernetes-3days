@@ -61,6 +61,21 @@ Wichtig: Da alle Teilnehmer denselben Kafka-Broker nutzen, muessen sowohl das
 **deine eigenen Kafka-Topics** mit deinem Namen/Namespace praefixiert werden — sonst
 kollidieren Schema-IDs und Nachrichten zwischen Teilnehmern.
 
+### Alle Teilnehmer gleichzeitig
+
+Das Setup ist fuer Parallelbetrieb ausgelegt: jeder Namespace, jedes Topic und jedes
+`_schemas`-Topic ist pro Teilnehmer eindeutig, Pod-Namen (`plain-producer`, `avro-consumer`, ...)
+muessen nur innerhalb eines Namespace eindeutig sein. 8 Teilnehmer koennen also parallel
+durch die Uebung gehen, ohne sich gegenseitig zu stoeren.
+
+Ein Punkt braucht Aufmerksamkeit: Die Schema Registry ist ein **dauerhaft laufender
+JVM-Prozess** (~250-300MB RAM), waehrend Producer/Consumer nur wenige Sekunden leben.
+Bei 7 Teilnehmern + Trainer sind das 8 gleichzeitig laufende Schema-Registry-Instanzen.
+Auf kleinen Clustern (z.B. 3 Nodes mit 2 vCPU / 4GB) kann das eng werden — das Manifest
+in Teil 2.1 begrenzt deshalb bewusst den JVM-Heap (`SCHEMA_REGISTRY_HEAP_OPTS`) und setzt
+`resources.limits`, damit eine einzelne Instanz nicht mehr als ~384Mi belegt. Der Trainer
+sollte trotzdem waehrend der Uebung kurz `kubectl top nodes` im Blick behalten.
+
 ---
 
 ## Code-Struktur
@@ -387,8 +402,6 @@ kubectl -n kafka exec -it kafka-controller-0 -- \
 
 ```
 kubectl -n ${NS} run plain-producer --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="TOPIC=${NS}-orders-plain" \
   --env="SCHEMA_VERSION=v1" \
@@ -414,8 +427,6 @@ Erwartete Ausgabe (Reihenfolge kann variieren):
 kubectl -n ${NS} delete pod plain-producer
 
 kubectl -n ${NS} run plain-consumer --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="TOPIC=${NS}-orders-plain" \
   --env="GROUP_ID=plain-consumer-1" \
@@ -442,8 +453,6 @@ niemand prueft das, es gibt keine Registry:
 kubectl -n ${NS} delete pod plain-consumer
 
 kubectl -n ${NS} run plain-producer-v2 --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="TOPIC=${NS}-orders-plain" \
   --env="SCHEMA_VERSION=v2-breaking" \
@@ -460,8 +469,6 @@ Der Producer sendet klaglos weiter: `{"id":"o-1","product":"Schraubenzieher","qt
 kubectl -n ${NS} delete pod plain-producer-v2
 
 kubectl -n ${NS} run plain-consumer-v2 --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="TOPIC=${NS}-orders-plain" \
   --env="GROUP_ID=plain-consumer-v2" \
@@ -492,8 +499,6 @@ kubectl -n ${NS} delete pod plain-consumer-v2
 
 ```
 kubectl -n ${NS} run avro-producer --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="SCHEMA_REGISTRY_URL=http://schema-registry.${NS}.svc.cluster.local:8081" \
   --env="TOPIC=${NS}-orders-avro" \
@@ -511,8 +516,6 @@ kubectl -n ${NS} logs avro-producer
 kubectl -n ${NS} delete pod avro-producer
 
 kubectl -n ${NS} run avro-consumer --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="SCHEMA_REGISTRY_URL=http://schema-registry.${NS}.svc.cluster.local:8081" \
   --env="TOPIC=${NS}-orders-avro" \
@@ -538,8 +541,6 @@ Erwartete Ausgabe:
 kubectl -n ${NS} delete pod avro-consumer
 
 kubectl -n ${NS} run avro-producer-v2 --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="SCHEMA_REGISTRY_URL=http://schema-registry.${NS}.svc.cluster.local:8081" \
   --env="TOPIC=${NS}-orders-avro" \
@@ -559,8 +560,6 @@ Versionen im selben Topic — alte Nachrichten ohne `customer`, neue mit:
 kubectl -n ${NS} delete pod avro-producer-v2
 
 kubectl -n ${NS} run avro-consumer-v2 --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="SCHEMA_REGISTRY_URL=http://schema-registry.${NS}.svc.cluster.local:8081" \
   --env="TOPIC=${NS}-orders-avro" \
@@ -588,8 +587,6 @@ Erwartete Ausgabe (letzte zwei Zeilen mit `customer`):
 kubectl -n ${NS} delete pod avro-consumer-v2
 
 kubectl -n ${NS} run avro-producer-v3 --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
-  --requests="cpu=50m,memory=150Mi" \
-  --limits="cpu=300m,memory=300Mi" \
   --env="BOOTSTRAP_SERVERS=kafka.kafka.svc.cluster.local:9092" \
   --env="SCHEMA_REGISTRY_URL=http://schema-registry.${NS}.svc.cluster.local:8081" \
   --env="TOPIC=${NS}-orders-avro" \
@@ -656,6 +653,9 @@ kubectl -n kafka exec kafka-controller-0 -- \
 kubectl -n kafka exec kafka-controller-0 -- \
   kafka-topics.sh --bootstrap-server localhost:9092 \
     --delete --topic ${NS}-orders-avro
+kubectl -n kafka exec kafka-controller-0 -- \
+  kafka-topics.sh --bootstrap-server localhost:9092 \
+    --delete --topic _schemas-${NS}
 ```
 
 Trainer, ganz am Ende (falls der Kafka-Cluster nicht fuer weitere Uebungen gebraucht wird):
