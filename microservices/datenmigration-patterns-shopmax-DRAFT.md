@@ -276,6 +276,8 @@ auch dauerhaft bleiben, wenn ein Context nie ein eigener Service wird
 **ShopMax-Fall:** eigene Schemas noch im selben Monolith-Deployment (real,
 naechster Schritt nach Pattern 5)
 
+![Database per Bounded Context: eigene Schemas noch im selben Monolith-Deployment](/images/pattern-database-per-bounded-context-shopmax.svg)
+
 **Ausgangslage:** Nach Pattern 5 ist der Code getrennt, aber `orders`, `payments`,
 `customers` liegen immer noch im selben `public`-Schema derselben Datenbank.
 
@@ -297,6 +299,8 @@ weil die Grenze längst existiert.
 **ShopMax-Fall:** Shipping-Service entsteht neu, hat noch keine eigene DB
 (real, Vorstufe zur Extraktion)
 
+![Monolith as Data Access Layer: Shipping-Service hat noch keine eigene DB](/images/pattern-monolith-as-data-access-layer-shopmax.svg)
+
 **Ausgangslage:** Shipping-Service wird als eigenstaendiges Deployment aus dem Monolithen
 herausgeloest — aber `shipments` liegt noch komplett in der Monolith-DB, ein sofortiger
 Datenumzug ist zu riskant fuer den ersten Schritt.
@@ -317,6 +321,8 @@ Zwischenzustand, kein Zielbild.
 **Kategorie:** B | **Einordnung:** Migration only — explizit Uebergangsphase, kein Zielbild
 **ShopMax-Fall:** Shipping-Service haelt neue Sendungen selbst, alte noch
 im Monolithen (real, Fortsetzung von Pattern 7)
+
+![Multischema Storage: neue Sendungen selbst gehalten, alte noch im Monolithen](/images/pattern-multischema-storage-shopmax.svg)
 
 **Ausgangslage:** Shipping-Service (aus Pattern 7) soll jetzt anfangen, selbst Daten zu
 besitzen — aber Jahre an historischen Sendungsdaten komplett auf einen Schlag zu migrieren
@@ -597,8 +603,15 @@ statt strikt einheitlich:
 - ✅ 10 Tracer Write — `pattern-tracer-write-shopmax.svg` (Sequenz-Zeitstrahl)
 - ✅ 11 Database View — `pattern-database-view-shopmax.svg` (verbotener Direktzugriff vs. View)
 
-Die 10 Referenz-Patterns haben bewusst keine SVG — sie sind nicht fuer die Live-Praesentation
-vorgesehen, Text reicht dort als Nachschlagewerk.
+Zusaetzlich auf Wunsch auch fuer die Shipping-Service-Erzaehlung (Pattern 5 → 6 → 7 → 8
+haengen zusammen, obwohl nur 5 als Live-Pattern markiert ist):
+
+- ✅ 6 Database per Bounded Context — `pattern-database-per-bounded-context-shopmax.svg` (drei Schemas, eine DB)
+- ✅ 7 Monolith as Data Access Layer — `pattern-monolith-as-data-access-layer-shopmax.svg` (API statt Direktzugriff)
+- ✅ 8 Multischema Storage — `pattern-multischema-storage-shopmax.svg` (zwei Quellen nach Stichtag)
+
+Die restlichen 7 Referenz-Patterns (12, 13, 14, 15, 16, 17) haben weiterhin bewusst keine
+SVG — Text reicht dort als Nachschlagewerk.
 
 ## Offene Fragen zur Bewertung
 

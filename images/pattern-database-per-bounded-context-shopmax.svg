@@ -1,0 +1,53 @@
+<svg width="700" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Database per Bounded Context: eigene Schemas noch im selben Monolith-Deployment</title>
+<desc>Innerhalb derselben Datenbank bekommt jeder Bounded Context ein eigenes Schema. Zugriffe ueber Schema-Grenzen sind technisch gesperrt, obwohl noch keine physische Trennung stattgefunden hat.</desc>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.th { font-size: 14px; font-weight: 500; fill: #2C2C2A; }
+.ts { font-size: 12px; fill: #5F5E5A; }
+.tc { font-size: 11px; fill: #5F5E5A; }
+.arr { stroke: #888780; stroke-width: 1.5; fill: none; }
+.c-gray > rect { fill: #F1EFE8; stroke: #5F5E5A; stroke-width: 0.5; }
+.c-gray .th { fill: #444441; }
+.c-blue > rect { fill: #E6F1FB; stroke: #185FA5; stroke-width: 0.5; }
+.c-blue .th { fill: #0C447C; }
+.c-teal > rect { fill: #E1F5EE; stroke: #0F6E56; stroke-width: 0.5; }
+.c-teal .th { fill: #085041; }
+.c-purple > rect { fill: #EEEDFE; stroke: #534AB7; stroke-width: 0.5; }
+.c-purple .th { fill: #3C3489; }
+</style>
+
+<text class="th" x="30" y="26">Eine Datenbank, drei getrennte Schemas</text>
+
+<g class="c-gray">
+  <rect x="30" y="45" width="640" height="150" rx="10"/>
+  <text class="ts" x="50" y="66">Monolith-DB (ein Deployment, ein Server)</text>
+
+  <g class="c-blue">
+    <rect x="50" y="80" width="180" height="90" rx="6"/>
+    <text class="th" x="140" y="100" text-anchor="middle">order_schema</text>
+    <text class="tc" x="140" y="120" text-anchor="middle">orders</text>
+    <text class="tc" x="140" y="136" text-anchor="middle">order_items</text>
+  </g>
+
+  <g class="c-teal">
+    <rect x="260" y="80" width="180" height="90" rx="6"/>
+    <text class="th" x="350" y="100" text-anchor="middle">payment_schema</text>
+    <text class="tc" x="350" y="120" text-anchor="middle">payments</text>
+  </g>
+
+  <g class="c-purple">
+    <rect x="470" y="80" width="180" height="90" rx="6"/>
+    <text class="th" x="560" y="100" text-anchor="middle">customer_schema</text>
+    <text class="tc" x="560" y="120" text-anchor="middle">customers</text>
+  </g>
+
+  <line x1="230" y1="150" x2="260" y2="150" stroke="#B5433B" stroke-width="1.5"/>
+  <line x1="235" y1="145" x2="255" y2="155" stroke="#B5433B" stroke-width="1.5"/>
+  <line x1="235" y1="155" x2="255" y2="145" stroke="#B5433B" stroke-width="1.5"/>
+  <text class="tc" x="200" y="182" fill="#B5433B">REVOKE — kein Zugriff ueber Schema-Grenzen</text>
+</g>
+
+<text class="ts" x="30" y="222">Spaeterer Umzug in eine eigene Datenbank: nur noch Infrastruktur (neue Instanz,</text>
+<text class="ts" x="30" y="240">Connection-String) — keine riskante Schema-Aenderung mehr noetig.</text>
+</svg>
