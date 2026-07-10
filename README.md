@@ -100,6 +100,13 @@
      * [Asynchrones Messaging](microservices/asynchronous-messaging.md)
      * [EventBus Implementierungen/Überblick](/microservices/eventbus/overview.md)
 
+  1. Migration Patterns: Monolith schrittweise ablösen
+     * [Überblick: Strangler Fig, Parallel Run, Branch by Abstraction, Decorating Collaborator](microservices/strategic-patterns.md)
+     * [Strangler Fig Pattern](microservices/strategic-patterns/strangler-fig.md)
+     * [Branch by Abstraction](microservices/strategic-patterns/branch-by-abstraction.md)
+     * [Parallel Run](microservices/strategic-patterns/parallel-run.md)
+     * [Decorating Collaborator](microservices/strategic-patterns/decorator-collaborator.md)
+
   1. Datenmigration und Database Patterns
      * [Gesamtübersicht: Alle Database Patterns im Überblick](microservices/databases/patterns/overview.md)
      * [Database Patterns anhand ShopMax (alle 17 Patterns mit Grafik)](microservices/datenmigration-patterns-shopmax.md)
@@ -112,13 +119,6 @@
      * [Schema Registry - Konzept](async-messaging/03-schema-registry.md)
      * [Übung: Kafka Schema Registry mit Avro (Kubernetes)](async-messaging/kafka-schema-registry.md)
      * [Übung: Producer/Consumer mit und ohne Schema Registry (Java, Kubernetes)](async-messaging/04-uebung-avro-vs-plain.md)
-
-  1. Migration Patterns: Monolith schrittweise ablösen
-     * [Überblick: Strangler Fig, Parallel Run, Branch by Abstraction, Decorating Collaborator](microservices/strategic-patterns.md)
-     * [Strangler Fig Pattern](microservices/strategic-patterns/strangler-fig.md)
-     * [Branch by Abstraction](microservices/strategic-patterns/branch-by-abstraction.md)
-     * [Parallel Run](microservices/strategic-patterns/parallel-run.md)
-     * [Decorating Collaborator](microservices/strategic-patterns/decorator-collaborator.md)
 
   1. Übungen: Monolith schneiden
      * [Uebung: Monolith schneiden — DDD, Bounded Contexts und Strangler Fig](microservices/uebung-monolith-schneiden.md)
