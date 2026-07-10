@@ -23,6 +23,49 @@ Neuer Code wächst daneben, übernimmt Stück für Stück einzelne Zuständigkei
 alten Code nichts mehr übrig ist. Es gibt nie einen Moment, an dem "alles neu" ist —
 und nie einen Moment, an dem etwas komplett steht.
 
+## Wann nutzt man Strangler Fig?
+
+### Signale, die dafür sprechen
+
+- **Das System muss während der Migration durchgehend laufen.** ShopMax hat kein
+  Wartungsfenster — Bestellungen kommen 24/7 rein. Ein Cutover-Wochenende, an dem alles
+  offline ist, ist keine Option.
+- **Der Umfang oder das Risiko des Rewrites ist zu groß, um ihn auf einmal zu verstehen.**
+  Bei ShopMax weiß niemand mehr genau, was der 8 Jahre alte Bestellprozess an Sonderfällen
+  abdeckt. Ein Big-Bang-Rewrite würde all das gleichzeitig neu erraten müssen.
+- **Rollback muss jederzeit einfach möglich sein.** Mit einer Umleitung (Proxy-Regel,
+  Feature-Flag, Consumer-Wechsel) ist der Rückweg ein Konfig-Flip. Bei einem kompletten
+  Ersatz gibt es dagegen oft keinen Weg zurück außer einem Restore aus dem Backup.
+- **Es gibt eine ansprechbare Schnittstelle, an der sich umleiten lässt** — eine HTTP-Route,
+  ein Topic, eine klare Domain-Grenze. Ohne so eine Schnittstelle hat man nichts, worüber
+  man den Traffic überhaupt schrittweise verschieben könnte.
+- **Das Team soll Vertrauen und Erfahrung aufbauen, bevor der große Rest drankommt** —
+  genau deshalb schneidet ShopMax zuerst Notification (unkritisch, wenig Abhängigkeiten)
+  und erst zum Schluss den Bestellprozess (siehe Scoring in der
+  [Musterlösung](/microservices/uebung-monolith-schneiden-musterloesung.md)).
+
+### Wann eher nicht
+
+- **Das System ist klein genug für einen Big-Bang.** Ein internes Tool mit fünf Nutzern
+  und einem planbaren Wartungsfenster braucht keine wochenlange Migrationsinfrastruktur —
+  der Aufwand für Proxy/Feature-Flag/Doppelbetrieb würde den Nutzen übersteigen.
+- **Es gibt keine sinnvolle Schnittstelle zum Umleiten.** Wenn der zu ersetzende Code so
+  eng mit dem Rest des Monolithen verzahnt ist, dass man ihn nicht über eine URL, ein Topic
+  oder eine Methodengrenze ansprechen kann, ist [Branch by Abstraction](/microservices/strategic-patterns/branch-by-abstraction.md)
+  der richtige *erste* Schritt — es schafft überhaupt erst die Schnittstelle, an der Strangler
+  Fig später ansetzen kann.
+- **Ein harter Stichtag erzwingt einen Cutover zu einem festen Zeitpunkt** — z.B. weil ein
+  Vertrag mit einem Altsystem-Anbieter an einem bestimmten Datum ausläuft. Man kann die
+  *Vorbereitung* trotzdem schrittweise machen (inkl. [Parallel Run](/microservices/strategic-patterns/parallel-run.md)
+  zur Absicherung), aber der eigentliche Umschaltmoment ist dann kein schrittweiser Ramp-up
+  mehr, sondern ein einmaliger Schnitt.
+- **Doppelbetrieb ist aus fachlichen Gründen nicht erlaubt** — z.B. wenn regulatorisch zu
+  jedem Zeitpunkt exakt eine Quelle der Wahrheit für Buchungen existieren muss und alter
+  sowie neuer Code nicht parallel Bestellungen verarbeiten dürfen.
+- **Die Kosten des Parallelbetriebs übersteigen den Nutzen bei einem trivialen Feature** —
+  für eine Funktion, die ohnehin in einer Stunde neu geschrieben und getestet ist, lohnt
+  sich keine mehrwöchige Migrationsstrecke mit Proxy und Feature-Flags.
+
 ## Die drei Bausteine
 
 Damit der Traffic vom Monolithen zum neuen Service wandert, ohne dass Aufrufer etwas
@@ -88,6 +131,28 @@ Key an `users` und `orders` in der Monolith-DB. Wie man **Daten** schrittweise m
 gehen, zeigt der Deep-Dive dazu ausführlich anhand desselben ShopMax-Beispiels:
 [Datenmigration: Notification Service](/microservices/datenmigration-notification-service.md).
 
+## Strangler Fig vs. Decorating Collaborator — was ist der Unterschied?
+
+Das ist die Verwechslung, die am häufigsten auftritt: Decorating Collaborator ist
+**kein eigenständiges Konkurrenz-Pattern zu Strangler Fig, sondern eine ausgearbeitete
+Variante des HTTP-Proxy-Bausteins von oben.** Anders gesagt — jeder Decorating-Collaborator-Umbau
+*ist* ein Strangler Fig, aber nicht jeder Strangler Fig braucht die zusätzliche Maschinerie
+von Decorating Collaborator.
+
+| | Strangler Fig (einfache Umleitung) | Decorating Collaborator |
+|---|---|---|
+| Umleitungsmechanismus | Proxy-Regel, Feature-Flag oder Consumer-Wechsel — meist ein einmaliger, grober Schnitt | dieselbe Schaltstelle, aber mit eingebautem Schatten-Modus und feinem Traffic-Ramp (1 % → 10 % → 100 %) |
+| Vergleich alt vs. neu | keiner eingebaut — man verlässt sich auf Tests/Monitoring nach der Umleitung | Live-Vergleich Request für Request, *bevor* überhaupt echter Traffic ankommt |
+| Aufwand | gering — ein Proxy-Rule-Eintrag oder ein Flag reicht | höher — die Schaltstelle muss beide Systeme parallel aufrufen, Antworten vergleichen und den Traffic-Anteil steuern können |
+| Passt gut zu | unkritischer, gut verstandener Funktionalität, bei der ein Fehler schnell auffällt und wenig kostet — bei ShopMax: **Notification** (kein kritischer Pfad, Ausfall = keine E-Mail, keine Bestellungsfehler) | kritischer oder komplexer Funktionalität, bei der ein falsches Ergebnis teuer oder schwer zu bemerken wäre — bei ShopMax: **Userdaten-Abfrage**, die an 20 Stellen im Bestellprozess hängt |
+
+**Faustregel:** Reicht "wir schalten um und beobachten das Monitoring" als Sicherheitsnetz,
+ist die einfache Strangler-Fig-Umleitung genug. Braucht man dagegen belastbare Evidenz
+*vor* der Umleitung — weil ein Fehler teuer, unauffällig oder schwer rückgängig zu machen
+wäre — lohnt sich der Mehraufwand von Decorating Collaborator (ggf. kombiniert mit
+[Parallel Run](/microservices/strategic-patterns/parallel-run.md), um schon vor der
+Umleitung Vertrauen über historische Daten aufzubauen).
+
 ## Warum man das so macht
 
 - **Reversibel** — jede Umleitung (Proxy-Regel, Flag, Consumer-Wechsel) lässt sich mit
@@ -99,13 +164,16 @@ gehen, zeigt der Deep-Dive dazu ausführlich anhand desselben ShopMax-Beispiels:
 - **Reihenfolge ist verhandelbar** — man schneidet zuerst, was am wenigsten Abhängigkeiten
   hat (Notification), und zuletzt, was am meisten kritischen Code bindet (Bestellprozess).
 
-## Verwandte Patterns
+## Weitere verwandte Patterns
 
-- **[Decorating Collaborator](/microservices/strategic-patterns/decorator-collaborator.md)** —
-  eine Verfeinerung der HTTP-Proxy-Variante: die Schaltstelle vergleicht zusätzlich
-  Antworten im Schatten-Modus, bevor überhaupt umgeleitet wird.
+Der Vergleich zu Decorating Collaborator steht oben — daneben spielen zwei weitere
+Patterns mit rein:
+
 - **[Branch by Abstraction](/microservices/strategic-patterns/branch-by-abstraction.md)** —
-  wird genutzt, *bevor* überhaupt ein externer Service existiert: eine Abstraktion
-  innerhalb des Monolithen selbst vorbereiten.
+  kommt ins Spiel, *bevor* überhaupt eine externe Schnittstelle existiert: eine
+  Abstraktion innerhalb des Monolithen selbst vorbereiten, an der Strangler Fig später
+  ansetzen kann.
 - **[Parallel Run](/microservices/strategic-patterns/parallel-run.md)** — statt live
-  umzuleiten, laufen alter und neuer Code parallel und werden per Batch-Job verglichen.
+  umzuleiten, laufen alter und neuer Code parallel und werden per Batch-Job verglichen;
+  liefert die Vertrauensbasis, *bevor* man sich für Strangler Fig oder Decorating
+  Collaborator entscheidet.
