@@ -24,3 +24,8 @@ dann für jede Sprache separat gepflegt und synchron gehalten werden.
 
   * [Static Reference Data Service](/microservices/database-patterns/static-reference-data-service.md) —
     die sprachunabhängige Alternative.
+
+## ShopMax-Beispiel
+
+Pattern 17 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Bestellstatus-Codes als gemeinsame Java-Bibliothek, inkl. Grafik.

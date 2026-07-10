@@ -42,3 +42,9 @@ Migration, kein Zielbild.
 ## Referenz
 
   * https://microservices.io/patterns/data/shared-database.html
+
+## ShopMax-Beispiel
+
+Kein eigenes Pattern in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+dort der Status-quo-Rahmen ganz am Anfang: ShopMax startet mit genau dieser einen
+gemeinsamen Datenbank, von der aus alle 18 Patterns wegmigrieren.

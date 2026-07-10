@@ -102,6 +102,7 @@
 
   1. Datenmigration und Database Patterns
      * [Gesamtübersicht: Alle Database Patterns im Überblick](microservices/databases/patterns/overview.md)
+     * [Database Patterns anhand ShopMax (alle 18 Patterns mit Grafik)](microservices/datenmigration-patterns-shopmax.md)
      * [Shared Database](microservices/database-patterns/shared-database.md)
      * [Database View](microservices/database-patterns/database-view.md)
      * [Database-as-a-Service Interface](microservices/database-patterns/database-as-a-service-interface.md)

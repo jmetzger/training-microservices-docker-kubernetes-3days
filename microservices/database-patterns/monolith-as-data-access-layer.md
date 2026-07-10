@@ -35,3 +35,8 @@ tatsächlich wechselt. Das ist kein Zielzustand, sondern eine bewusst befristete
     der nächste Schritt, sobald der Service anfängt, einen Teil der Daten selbst zu halten.
   * [Database Wrapping Service](/microservices/database-patterns/database-wrapping-service.md) —
     dieselbe Grundidee aus Sicht des Monolithen statt aus Sicht des neuen Service.
+
+## ShopMax-Beispiel
+
+Pattern 7 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Shipping-Service entsteht neu und hat noch keine eigene DB, inkl. Grafik.

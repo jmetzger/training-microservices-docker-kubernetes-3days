@@ -51,3 +51,8 @@ Produkt-Service-DB               Lagerbestand-Service-DB
     beiden neuen Tabellen zeigen.
   * Ausführliches Beispiel mit mehreren Foreign Keys gleichzeitig:
     [Datenmigration bei stark verzahnten Foreign Keys](/microservices/datenmigration-bestellprozess.md)
+
+## ShopMax-Beispiel
+
+Pattern 1 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Product-Service vs. Inventory-Service, inkl. Grafik und Migrationsschritten.

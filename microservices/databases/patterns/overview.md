@@ -5,12 +5,36 @@ Pattern hat eine eigene Datei unter
 [microservices/database-patterns/](/microservices/database-patterns/) — hier geht es
 darum, **welches Pattern in welcher Situation** das richtige ist.
 
-## Grundlegende Entscheidung: Database per Service oder Shared Database?
+## Status quo: Shared Database ist der Ausgangspunkt, keine Wahl
+
+Ein Monolith hat per Definition **eine** gemeinsame Datenbank, auf die alle Module direkt
+zugreifen — das ist kein Pattern, das man auswählt, sondern der Zustand, von dem aus jede
+der folgenden Migrationen startet. Jedes Pattern unten ist ein Werkzeug, um sich davon in
+Richtung Database per Service zu bewegen.
+
+**Nachteile des Status quo:** Single Point of Failure (außer im Cluster-Betrieb),
+Performance-Engpässe (durch Optimierung teilweise behebbar), und vor allem
+*Development-Time-Coupling*:
+
+```
+Ein Entwickler, der z.B. am OrderService arbeitet, muss Schema-Änderungen mit den
+Entwicklern aller anderen Services abstimmen, die dieselben Tabellen nutzen. Diese
+Kopplung und der Abstimmungsaufwand verlangsamen die Entwicklung.
+```
+
+Zwei Ausnahmefälle, in denen ein geteilter Zugriff bewusst laenger bestehen bleibt, aber
+dann kontrolliert statt roh (siehe [Database-as-a-Service
+Interface](/microservices/database-patterns/database-as-a-service-interface.md)): reine
+Referenzdaten-Lesezugriffe, oder ein Service bietet seine DB absichtlich als Endpunkt an.
+Details und wann das noch vertretbar ist: [Shared
+Database](/microservices/database-patterns/shared-database.md).
+
+Referenz: https://microservices.io/patterns/data/shared-database.html
+
+## Zielbild: Database per Service
 
 Die Basis-Entscheidung, bevor überhaupt ein Einzelpattern zum Einsatz kommt — kann auch
 pro Service unterschiedlich ausfallen.
-
-### Database per Service
 
 **Prämisse:** Ein anderer Service darf nur über die API zugreifen. Synchronisierung
 erfolgt ggf. asynchron (Messaging, Saga), nicht über einen gemeinsamen DB-Zugriff.
@@ -28,21 +52,6 @@ DB-Ebene (siehe [Saga Pattern](/microservices/databases/patterns/database-per-se
 Joins über Services hinweg sind schwierig.
 
 Referenz: https://microservices.io/patterns/data/database-per-service.html
-
-### Shared Database
-
-**Vorteile:** Joins und Transaktionen funktionieren wie gewohnt.
-
-**Nachteile:** Single Point of Failure (außer im Cluster-Betrieb), Performance-Engpässe
-(durch Optimierung teilweise behebbar), und vor allem *Development-Time-Coupling*:
-
-```
-Ein Entwickler, der z.B. am OrderService arbeitet, muss Schema-Änderungen mit den
-Entwicklern aller anderen Services abstimmen, die dieselben Tabellen nutzen. Diese
-Kopplung und der Abstimmungsaufwand verlangsamen die Entwicklung.
-```
-
-Referenz: https://microservices.io/patterns/data/shared-database.html
 
 ---
 
@@ -63,7 +72,6 @@ Referenz: https://microservices.io/patterns/data/shared-database.html
 
 | Situation | Pattern |
 |---|---|
-| Andere Services brauchen nur **lesenden** Zugriff auf statische Referenzdaten | [Shared Database](/microservices/database-patterns/shared-database.md) (eingeschränkt auf Lesefälle) |
 | Ich will das Schema nicht aufteilen, aber trotzdem einen kontrollierten, stabilen Lese-Vertrag anbieten | [Database View](/microservices/database-patterns/database-view.md) |
 | Fremde Clients (auch Legacy-Systeme) brauchen reinen Lese-Zugriff auf aktuelle Daten | [Database-as-a-Service Interface](/microservices/database-patterns/database-as-a-service-interface.md) |
 | Ich will verhindern, dass sich das Schema unter mir verändert, obwohl noch direkt zugegriffen wird | [Database Wrapping Service](/microservices/database-patterns/database-wrapping-service.md) |
@@ -114,7 +122,6 @@ Details, das "Wann"/"Wann eher nicht" und Code-Beispiele siehe die jeweils verli
 
 | Pattern | Zweck in einem Satz |
 |---|---|
-| [Shared Database](/microservices/database-patterns/shared-database.md) | Mehrere Services teilen sich eine Datenbank direkt — nur für statische Referenzdaten oder als bewusst angebotener Endpunkt vertretbar. |
 | [Database View](/microservices/database-patterns/database-view.md) | Stellt Daten als View statt als Tabelle bereit, damit sich das dahinterliegende Schema noch ändern kann, ohne den Vertrag nach außen zu brechen. |
 | [Database-as-a-Service Interface](/microservices/database-patterns/database-as-a-service-interface.md) | Eine dedizierte Read-Only-Datenbank als Endpunkt für Clients (z.B. Legacy-Systeme), getrennt von der internen Service-DB. |
 | [Database Wrapping Service](/microservices/database-patterns/database-wrapping-service.md) | Ein Service "umwickelt" eine bestehende Datenbank, damit Zugriffe nur noch über die API laufen und die DB nicht mehr direkt verändert wird. |
@@ -143,10 +150,18 @@ Details, das "Wann"/"Wann eher nicht" und Code-Beispiele siehe die jeweils verli
 | [Static Reference Data Library](/microservices/database-patterns/static-reference-data-library.md) | Referenzdaten wandern in eine eingebundene Bibliothek statt in eine Datenbank. |
 | [Static Reference Data Service](/microservices/database-patterns/static-reference-data-service.md) | Ein eigener REST-Service für Referenzdaten (z.B. Country-Code-Service). |
 
-### D. Ausgearbeitete Praxisbeispiele (Migration Schritt für Schritt)
+### D. ShopMax wendet jedes Pattern einzeln an
+
+Für alle 18 Patterns aus A–C gibt es eine eigene, in ShopMax verankerte Anwendungskarte
+(Ausgangslage, Migrationsschritte, Ergebnis, Grafik, Einordnung Migration-only vs.
+Dauerlösung): [Database Patterns anhand
+ShopMax](/microservices/datenmigration-patterns-shopmax.md).
+
+### E. Ausgearbeitete Praxisbeispiele (Migration Schritt für Schritt)
 
 Kombinieren mehrere der obigen Patterns zu einem vollständigen, durchgerechneten
-Migrationsplan am ShopMax-Beispiel:
+Migrationsplan am ShopMax-Beispiel — der nächste Schritt, nachdem die Einzelpatterns aus
+Abschnitt D bekannt sind:
 
 | Beispiel | Szenario | Eingesetzte Patterns |
 |---|---|---|
@@ -156,4 +171,5 @@ Migrationsplan am ShopMax-Beispiel:
 ## Siehe auch
 
   * [Alle Einzelpattern-Dateien](/microservices/database-patterns/)
+  * [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md)
   * [Umgang mit Transaktionen (Saga Pattern)](/microservices/databases/patterns/database-per-service/handling-of-transactions.md)

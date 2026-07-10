@@ -53,3 +53,8 @@ aufgeteilt auf drei verschiedene Zielservices:
     (weil eine Tabelle vorher aufgeteilt wurde).
   * [Tracer Write](/microservices/database-patterns/tracer-write.md) —
     legt die Reihenfolge fest, in der mehrere so entkoppelte Tabellen migriert werden.
+
+## ShopMax-Beispiel
+
+Pattern 3 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+`order_items.product_id` verliert den FK auf `products`, inkl. Grafik.

@@ -31,3 +31,8 @@ oder eine der Zugriffs-Patterns aus der [Gesamtübersicht](/microservices/databa
     die Vorstufe, bei der der Service noch gar keine eigenen Tabellen hat.
   * [Synchronize Data in Application](/microservices/database-patterns/synchronize-data-in-application.md) —
     löst den Übergangszustand endgültig auf.
+
+## ShopMax-Beispiel
+
+Pattern 8 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Shipping-Service haelt neue Sendungen selbst, alte noch im Monolithen, inkl. Grafik.

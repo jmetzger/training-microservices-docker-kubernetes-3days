@@ -52,3 +52,8 @@ Reihenfolge-Begründung:
   * [Move Foreign Key Relationship to Code](/microservices/database-patterns/move-foreign-key-relationship-to-code.md) —
     muss vor Schritt 1 abgeschlossen sein, wenn andere Tabellen per Foreign Key auf die
     zu migrierende Tabelle zeigen.
+
+## ShopMax-Beispiel
+
+Pattern 9 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+die vier Schritte konkret am Notification-Service-Fall, inkl. Grafik.

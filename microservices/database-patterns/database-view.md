@@ -27,3 +27,8 @@ darauf zugreifen, genau wie bei einer API.
     ähnliche Idee, aber als eigene, dedizierte Datenbank statt einer View im selben Schema.
   * [Aggregate Exposing Monolith](/microservices/database-patterns/aggregate-exposing-monolith.md) —
     die Alternative auf API-Ebene statt auf DB-Ebene.
+
+## ShopMax-Beispiel
+
+Pattern 11 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Cart-Service liest nur eine eingeschraenkte View auf `products`, inkl. Grafik.

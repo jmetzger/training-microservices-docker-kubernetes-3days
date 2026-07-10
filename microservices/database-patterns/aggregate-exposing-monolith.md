@@ -25,3 +25,8 @@ zusammensucht.
     dieselbe Idee auf DB-Ebene statt auf API-/Event-Ebene.
   * [Change Data Ownership](/microservices/database-patterns/change-data-ownership.md) —
     der Schritt danach, sobald der neue Service reif genug ist.
+
+## ShopMax-Beispiel
+
+Pattern 14 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Monolith veroeffentlicht `OrderReadyForShipment` statt vollem Schemazugriff, inkl. Grafik.

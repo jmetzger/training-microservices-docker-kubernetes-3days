@@ -1,12 +1,21 @@
-# Database Patterns anhand ShopMax — Entwurf (18 von 18 Patterns)
+# Database Patterns anhand ShopMax
 
-Prototyp, um das Format zu pruefen, bevor die bestehenden Dateien danach ausgerichtet werden.
-Prinzip durchgehend: **Database per Service** ist das Ziel, die einzelnen Patterns sind
-die Werkzeuge, um dorthin zu migrieren. Fokus jeder Karte: **wie laeuft die Migration ab**,
-nicht nur "was ist das Pattern".
+Ergaenzt die abstrakten Pattern-Definitionen unter
+[microservices/database-patterns/](/microservices/database-patterns/) um ein durchgehendes
+Anwendungsbeispiel. Prinzip durchgehend: **Database per Service** ist das Ziel, die
+einzelnen Patterns sind die Werkzeuge, um dorthin zu migrieren. Fokus jeder Karte:
+**wie laeuft die Migration ab**, nicht nur "was ist das Pattern".
 
 ShopMax-Services (aus der Monolith-schneiden-Uebung): User, Product, Inventory, Cart,
 Order, Payment, Shipping, Notification.
+
+**Fuer die Live-Session** (8 Patterns, in dieser Reihenfolge): 5. Repository per Bounded
+Context → 11. Database View → 2. Change Data Ownership → 1. Split Table → 3. Move Foreign
+Key Relationship to Code → 9. Synchronize Data in Application → 10. Tracer Write →
+4. Static Reference Data Service. Erzaehlung: Code vorbereiten → leichte Zwischenloesung →
+Ownership klaeren → physisch aufteilen → FK aufloesen → die Migrationsmechanik → Reihenfolge
+bei mehreren Tabellen → Referenzdaten-Sonderfall. Diese 8 sind unten mit 🔴 markiert, alle
+anderen (📖) sind Nachschlagewerk.
 
 ## Status quo: Shared Database (kein Pattern, sondern der Ausgangspunkt)
 
@@ -17,8 +26,7 @@ bewegen — Shared Database steht deshalb hier nicht als gleichwertige Auswahl n
 anderen (siehe `microservices/database-patterns/shared-database.md` fuer die zwei
 Ausnahmefaelle, in denen es bewusst als Zwischenzustand vertretbar bleibt: reine
 Referenzdaten-Lese-Zugriffe, oder ein Service bietet seine DB absichtlich als Endpunkt an —
-dafuer aber besser gleich [Database-as-a-Service Interface](#6-database-as-a-service-interface)
-statt rohem DB-Zugriff).
+dafuer aber besser gleich Pattern 12 (Database-as-a-Service Interface) statt rohem DB-Zugriff).
 
 ---
 
@@ -579,7 +587,7 @@ und Pattern 4 (Service statt Library) waere die robustere Wahl.
 
 ---
 
-## Stand
+## Herkunft der ShopMax-Faelle
 
 7 Patterns bleiben auf realen ShopMax-Bezuegen (1, 3, 5, 6, 7, 8, 9, 10, 11, 13, 17 — direkt
 aus der Monolith-schneiden-Uebung oder den zwei bestehenden Migrationsdokumenten ableitbar),
@@ -589,15 +597,6 @@ aus der Monolith-schneiden-Uebung oder den zwei bestehenden Migrationsdokumenten
 Pattern 9 und 10 (Synchronize Data in Application, Tracer Write) verweisen bewusst auf die
 zwei bestehenden Dateien statt sie zu duplizieren — die liefern bereits SQL-Details und
 Reihenfolge-Begruendung in voller Tiefe.
-
-**Entschieden (gemaess Empfehlung):**
-- Die 18 Karten **ergaenzen** die bestehenden `database-patterns/*.md`-Dateien, ersetzen sie nicht.
-- **8 Patterns live in der Session** (🔴 markiert): 5 → 11 → 2 → 1 → 3 → 9 → 10 → 4 — das ist
-  die Erzaehlung "Code vorbereiten → leichte Zwischenloesung → Ownership klaeren → physisch
-  aufteilen → FK aufloesen → die Migrationsmechanik → Reihenfolge bei mehreren Tabellen →
-  Referenzdaten-Sonderfall". Die restlichen 10 (📖 markiert) bleiben Nachschlagewerk.
-- Die zwei bestehenden Gesamtbeispiel-Dateien bleiben erhalten, als kombiniertes Beispiel
-  ans Ende gestellt, nachdem die Einzelpatterns bekannt sind.
 
 ## Klassifizierung: Migration only vs. Dauerlösung möglich
 
@@ -657,10 +656,15 @@ Pattern 15 vs. 16 vs. 4 zeigen bewusst dieselbe Grundfrage (Referenzdaten teilen
 steigender Konsolidierung: keine Mitte (15) → Mitte, aber SQL-Zugriff (16) → Mitte mit
 echter API (4). Der visuelle Vergleich der drei Grafiken nebeneinander macht das greifbar.
 
-## Offene Fragen zur Bewertung
+## Siehe auch: das kombinierte Beispiel
 
-- Grafiken bitte gegenlesen — insbesondere Pattern 4 (Stern-Topologie) und Pattern 9
-  (4-Phasen-Flow) sind inhaltlich am dichtesten, dort am ehesten pruefen, ob auf einen Blick
-  verstaendlich.
-- Reihenfolge der Live-Praesentation (5 → 11 → 2 → 1 → 3 → 9 → 10 → 4) so lassen, oder
-  passt eine andere Erzaehl-Reihenfolge besser zum Rest der Session?
+Nachdem die Einzelpatterns bekannt sind, zeigen zwei ausgearbeitete Gesamtbeispiele, wie
+mehrere davon in einem echten Migrationsplan zusammenspielen:
+
+- [Datenmigration: Notification Service](/microservices/datenmigration-notification-service.md) —
+  einfacher Fall (eine Tabelle, Pattern 9 in voller Tiefe)
+- [Datenmigration bei stark verzahnten Foreign Keys](/microservices/datenmigration-bestellprozess.md) —
+  schwieriger Fall (Hub-Tabelle mit vier eingehenden Foreign Keys, Pattern 3 + 10 in voller Tiefe)
+
+Fuer die Entscheidung "welches Pattern in welcher Situation" siehe die
+[Gesamtübersicht](/microservices/databases/patterns/overview.md).

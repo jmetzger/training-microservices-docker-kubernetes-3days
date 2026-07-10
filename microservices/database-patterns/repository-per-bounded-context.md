@@ -21,3 +21,8 @@ Tabellen zugreift — auch wenn diese noch in derselben physischen Datenbank lie
 
   * [Database per Bounded Context](/microservices/database-patterns/database-per-bounded-context.md) —
     der logische nächste Schritt, sobald der Code-Zugriff getrennt ist.
+
+## ShopMax-Beispiel
+
+Pattern 5 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Vorbereitung fuer den Bestellprozess-Split, inkl. Grafik.

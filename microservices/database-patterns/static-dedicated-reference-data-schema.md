@@ -28,3 +28,8 @@ Datenbank betrifft dann alle Konsumenten gleichzeitig, nicht nur einen Service.
     die redundante, aber koordinationsfreie Alternative.
   * [Static Reference Data Service](/microservices/database-patterns/static-reference-data-service.md) —
     die API-basierte Alternative statt direktem DB-Zugriff.
+
+## ShopMax-Beispiel
+
+Pattern 16 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+`countries` als Zwischenschritt vor dem Country-Code-Service, inkl. Grafik.

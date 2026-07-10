@@ -27,3 +27,8 @@ man wendet dessen vier Schritte wiederholt an, statt in einem großen Schnitt.
     der Mechanismus, der pro Tabelle wiederholt angewendet wird.
   * [Move Foreign Key Relationship to Code](/microservices/database-patterns/move-foreign-key-relationship-to-code.md) —
     legt fest, in welcher Reihenfolge die Tabellen migriert werden dürfen.
+
+## ShopMax-Beispiel
+
+Pattern 10 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Reihenfolge der Tabellenmigration im Bestellprozess, mit Hausumzugs-Analogie und Grafik.

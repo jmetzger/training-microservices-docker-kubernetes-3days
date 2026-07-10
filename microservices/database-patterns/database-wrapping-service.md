@@ -23,3 +23,8 @@ dass sich die Datenbank nicht unkontrolliert verändert.
     der noch keine eigene Datenbank hat.
   * [Change Data Ownership](/microservices/database-patterns/change-data-ownership.md) —
     der nächste Schritt, sobald klar ist, wer die Daten wirklich besitzen soll.
+
+## ShopMax-Beispiel
+
+Pattern 13 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+direkter SQL-Zugriff auf `orders` wird unterbunden, inkl. Grafik.

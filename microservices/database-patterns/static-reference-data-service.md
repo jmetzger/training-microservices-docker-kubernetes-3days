@@ -31,3 +31,8 @@ Ein dedizierter Service (REST-API) für Referenzdaten, z.B. Ländercodes.
 
   * [Static Dedicated Reference Data Schema](/microservices/database-patterns/static-dedicated-reference-data-schema.md) —
     dieselbe Zentralisierungsidee, aber über direkten DB-Zugriff statt über eine API.
+
+## ShopMax-Beispiel
+
+Pattern 4 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Waehrungs-/Laendercodes fuer Order-, Payment- und Shipping-Service, inkl. Grafik.

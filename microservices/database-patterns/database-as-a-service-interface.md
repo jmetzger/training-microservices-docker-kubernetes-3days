@@ -34,3 +34,8 @@ für den Bulk-Sync beschrieben ist).
 ## Referenz
 
   * https://microservices.io/patterns/data/database-per-service.html
+
+## ShopMax-Beispiel
+
+Pattern 12 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Legacy-BI-Tool fuer Bestellreports, inkl. Klarstellung "SQL-Endpunkt statt REST" und Grafik.

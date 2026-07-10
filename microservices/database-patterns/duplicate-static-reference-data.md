@@ -21,3 +21,8 @@ ISO-Ländercodes liegt z.B. bei 2011.
 
   * [Static Dedicated Reference Data Schema](/microservices/database-patterns/static-dedicated-reference-data-schema.md) —
     die zentrale Alternative, wenn Redundanz nicht akzeptabel ist.
+
+## ShopMax-Beispiel
+
+Pattern 15 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Versandmethoden-Codes als drei unabhaengige Kopien, im Kontrast zu Pattern 4, inkl. Grafik.

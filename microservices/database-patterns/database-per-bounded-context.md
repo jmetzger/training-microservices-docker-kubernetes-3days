@@ -23,3 +23,8 @@ String ändern) statt einer riskanten Schema-Änderung mitten in der Migration.
   * [Split Table](/microservices/database-patterns/split-table.md) —
     falls eine bestehende Tabelle erst noch auf mehrere Contexts aufgeteilt werden muss,
     bevor sie in getrennte Schemas wandern kann.
+
+## ShopMax-Beispiel
+
+Pattern 6 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+eigene Schemas fuer Order/Payment/Customer im selben Monolith-Deployment, inkl. Grafik.

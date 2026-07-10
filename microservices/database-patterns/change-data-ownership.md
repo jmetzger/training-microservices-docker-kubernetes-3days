@@ -32,3 +32,8 @@ fest, *wer am Ende schreiben darf*, nicht *wie die Daten dorthin kommen*.
     der Migrationsmechanismus, der die neue Ownership technisch umsetzt.
   * [Move Foreign Key Relationship to Code](/microservices/database-patterns/move-foreign-key-relationship-to-code.md) —
     notwendig, wenn andere Tabellen per Foreign Key auf das Datum zeigen, dessen Ownership wechselt.
+
+## ShopMax-Beispiel
+
+Pattern 2 in [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+Inventory-Service uebernimmt die Schreibhoheit fuer Lagerbestand, inkl. Grafik.
