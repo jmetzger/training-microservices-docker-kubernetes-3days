@@ -86,6 +86,8 @@
      * [Monolith vs. Microservices (Abgrenzung)](microservices/monolith-vs-microservice.md)
      * [Indikatoren für Microservices (Wechsel von Monolith)](microservices/analyse/indikatoren-fuer-wechsel-von-monolith-auf-microservices.md)
      * [Monolith schneiden microservices](microservices/monolith-schneiden.md)
+     * [Microservice and Database](microservices/basics/database.md)
+
 
   1. Microservices-Architektur
      * [Architektur von Microservices (Schichten/Layers)](microservices/layers.md)
@@ -102,9 +104,17 @@
      * [Datenbank - Patterns - Teil 2](microservices/database-patterns-teil2.md)
 
   1. Umgang mit Transaktionen
-     [Saga Überblick](microservices/databases/patterns/database-per-service/handling-of-transactions.md)
-     [Übung Temporal](/microservices/uebung-saga-temporal.md)
+     * [Saga Überblick](microservices/databases/patterns/database-per-service/handling-of-transactions.md)
+     * [Übung Temporal](/microservices/uebung-saga-temporal.md)
 
+  1. MicroServices und die Datenbank
+     * [Microservice and Database](microservices/basics/database.md)
+
+  1. Microservices (Vorgehen)
+     * [Beginnen mit Datenbank oder Anwendungen]()
+
+  1. Microservices Strategische Patterns (Anwendungen)
+     * [Strategische Patterns](microservices/strategic-patterns.md)
 
   1. Übungen: Monolith schneiden
      * [Uebung: Monolith schneiden — DDD, Bounded Contexts und Strangler Fig](microservices/uebung-monolith-schneiden.md)
