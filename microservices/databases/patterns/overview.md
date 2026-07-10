@@ -1,9 +1,10 @@
 # Database Patterns: Gesamtübersicht
 
-Dieses Dokument ist der zentrale Einstiegspunkt für alle Database Patterns. Jedes
-Pattern hat eine eigene Datei unter
-[microservices/database-patterns/](/microservices/database-patterns/) — hier geht es
-darum, **welches Pattern in welcher Situation** das richtige ist.
+Dieses Dokument ist der zentrale Einstiegspunkt für alle Database Patterns. Jedes Pattern
+wird konkret am ShopMax-Beispiel gezeigt in
+[Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) —
+hier geht es darum, **welches Pattern in welcher Situation** das richtige ist; die
+verlinkten Abschnitte dort zeigen dann, wie die Migration konkret ablaeuft.
 
 ## Status quo: Shared Database ist der Ausgangspunkt, keine Wahl
 
@@ -23,11 +24,12 @@ Kopplung und der Abstimmungsaufwand verlangsamen die Entwicklung.
 ```
 
 Zwei Ausnahmefälle, in denen ein geteilter Zugriff bewusst laenger bestehen bleibt, aber
-dann kontrolliert statt roh (siehe [Database-as-a-Service
-Interface](/microservices/database-patterns/database-as-a-service-interface.md)): reine
-Referenzdaten-Lesezugriffe, oder ein Service bietet seine DB absichtlich als Endpunkt an.
-Details und wann das noch vertretbar ist: [Shared
-Database](/microservices/database-patterns/shared-database.md).
+dann kontrolliert statt roh (siehe [Pattern 12 — Database-as-a-Service
+Interface](/microservices/datenmigration-patterns-shopmax.md#12-database-as-a-service-interface)):
+reine Referenzdaten-Lesezugriffe, oder ein Service bietet seine DB absichtlich als Endpunkt
+an. Details: [Status quo: Shared
+Database](/microservices/datenmigration-patterns-shopmax.md#status-quo-shared-database-kein-pattern-sondern-der-ausgangspunkt)
+in der ShopMax-Datei.
 
 Referenz: https://microservices.io/patterns/data/shared-database.html
 
@@ -68,17 +70,20 @@ Referenz: https://microservices.io/patterns/data/database-per-service.html
 
 ## Entscheidungshilfe: Welches Pattern wann?
 
+Jeder Link springt direkt in den passenden Abschnitt der
+[ShopMax-Datei](/microservices/datenmigration-patterns-shopmax.md).
+
 ### A. Zugriff über Service-Grenzen, ohne die Datenbank aufzuteilen
 
 | Situation | Pattern |
 |---|---|
-| Ich will das Schema nicht aufteilen, aber trotzdem einen kontrollierten, stabilen Lese-Vertrag anbieten | [Database View](/microservices/database-patterns/database-view.md) |
-| Fremde Clients (auch Legacy-Systeme) brauchen reinen Lese-Zugriff auf aktuelle Daten | [Database-as-a-Service Interface](/microservices/database-patterns/database-as-a-service-interface.md) |
-| Ich will verhindern, dass sich das Schema unter mir verändert, obwohl noch direkt zugegriffen wird | [Database Wrapping Service](/microservices/database-patterns/database-wrapping-service.md) |
-| Ein neuer Service entsteht, der Monolith bleibt aber vorerst Herr über die Daten | [Aggregate Exposing Monolith](/microservices/database-patterns/aggregate-exposing-monolith.md) |
-| Ein neuer Service soll ab sofort für ein Datum verantwortlich sein | [Change Data Ownership](/microservices/database-patterns/change-data-ownership.md) |
-| Historische **und** laufende Daten müssen schrittweise vom alten ins neue Schema | [Synchronize Data in Application](/microservices/database-patterns/synchronize-data-in-application.md) |
-| Nicht die ganze Datenbank, sondern nur einzelne Tabellen sollen nach und nach umziehen | [Tracer Write](/microservices/database-patterns/tracer-write.md) |
+| Ich will das Schema nicht aufteilen, aber trotzdem einen kontrollierten, stabilen Lese-Vertrag anbieten | [11 — Database View](/microservices/datenmigration-patterns-shopmax.md#11-database-view) |
+| Fremde Clients (auch Legacy-Systeme) brauchen reinen Lese-Zugriff auf aktuelle Daten | [12 — Database-as-a-Service Interface](/microservices/datenmigration-patterns-shopmax.md#12-database-as-a-service-interface) |
+| Ich will verhindern, dass sich das Schema unter mir verändert, obwohl noch direkt zugegriffen wird | [13 — Database Wrapping Service](/microservices/datenmigration-patterns-shopmax.md#13-database-wrapping-service) |
+| Ein neuer Service entsteht, der Monolith bleibt aber vorerst Herr über die Daten | [14 — Aggregate Exposing Monolith](/microservices/datenmigration-patterns-shopmax.md#14-aggregate-exposing-monolith) |
+| Ein neuer Service soll ab sofort für ein Datum verantwortlich sein | [2 — Change Data Ownership](/microservices/datenmigration-patterns-shopmax.md#2-change-data-ownership) |
+| Historische **und** laufende Daten müssen schrittweise vom alten ins neue Schema | [9 — Synchronize Data in Application](/microservices/datenmigration-patterns-shopmax.md#9-synchronize-data-in-application) |
+| Nicht die ganze Datenbank, sondern nur einzelne Tabellen sollen nach und nach umziehen | [10 — Tracer Write](/microservices/datenmigration-patterns-shopmax.md#10-tracer-write) |
 
 **Kurzfassung, wenn unsicher:** Solange nur *gelesen* wird und sich die Daten selten
 ändern → Database View oder DB-as-a-Service-Interface reichen meistens. Sobald ein
@@ -90,11 +95,11 @@ Aufteilungs-Patterns unten.
 
 | Situation | Pattern |
 |---|---|
-| Ich schneide zuerst die Daten, der Code folgt später | [Repository per Bounded Context](/microservices/database-patterns/repository-per-bounded-context.md) + [Database per Bounded Context](/microservices/database-patterns/database-per-bounded-context.md) |
-| Ich schneide zuerst den Code, die Daten bleiben vorerst zentral | [Monolith as Data Access Layer](/microservices/database-patterns/monolith-as-data-access-layer.md) |
-| Ein neuer Service soll einen Teil seiner Daten selbst halten, den Rest (noch) vom Monolithen beziehen | [Multischema Storage](/microservices/database-patterns/multischema-storage.md) |
-| Eine Tabelle wird von mehreren zukünftigen Services gebraucht und muss auseinandergezogen werden | [Split Table](/microservices/database-patterns/split-table.md) |
-| Eine Tabelle hat einen Foreign Key auf eine Tabelle, die in einen anderen Service wandert (oder umgekehrt) | [Move Foreign Key Relationship to Code](/microservices/database-patterns/move-foreign-key-relationship-to-code.md) |
+| Ich schneide zuerst die Daten, der Code folgt später | [5 — Repository per Bounded Context](/microservices/datenmigration-patterns-shopmax.md#5-repository-per-bounded-context) + [6 — Database per Bounded Context](/microservices/datenmigration-patterns-shopmax.md#6-database-per-bounded-context) |
+| Ich schneide zuerst den Code, die Daten bleiben vorerst zentral | [7 — Monolith as Data Access Layer](/microservices/datenmigration-patterns-shopmax.md#7-monolith-as-data-access-layer) |
+| Ein neuer Service soll einen Teil seiner Daten selbst halten, den Rest (noch) vom Monolithen beziehen | [8 — Multischema Storage](/microservices/datenmigration-patterns-shopmax.md#8-multischema-storage) |
+| Eine Tabelle wird von mehreren zukünftigen Services gebraucht und muss auseinandergezogen werden | [1 — Split Table](/microservices/datenmigration-patterns-shopmax.md#1-split-table) |
+| Eine Tabelle hat einen Foreign Key auf eine Tabelle, die in einen anderen Service wandert (oder umgekehrt) | [3 — Move Foreign Key Relationship to Code](/microservices/datenmigration-patterns-shopmax.md#3-move-foreign-key-relationship-to-code) |
 | Eine Tabelle hat Foreign Keys **von mehreren** anderen Tabellen gleichzeitig (Hub-Tabelle) | Kombination aus Split Table + Move Foreign Key Relationship to Code, angewendet auf *jede* eingehende Kante einzeln — siehe [Datenmigration bei stark verzahnten Foreign Keys](/microservices/datenmigration-bestellprozess.md) |
 
 **Faustregel für die Reihenfolge bei mehreren betroffenen Tabellen:** Erst jede
@@ -106,62 +111,60 @@ Verschieben irgendeine der Kanten unkontrolliert.
 
 | Situation | Pattern |
 |---|---|
-| Mehrere Services brauchen dieselben, praktisch unveränderlichen Referenzdaten (Ländercodes) und Redundanz stört nicht | [Duplicate Static Reference Data](/microservices/database-patterns/duplicate-static-reference-data.md) |
-| Redundanz ist nicht akzeptabel, ein eigener Service wäre Overkill | [Static Dedicated Reference Data Schema](/microservices/database-patterns/static-dedicated-reference-data-schema.md) |
-| Alle Services nutzen dieselbe Programmiersprache | [Static Reference Data Library](/microservices/database-patterns/static-reference-data-library.md) |
-| Polyglotter Stack (mehrere Programmiersprachen) oder häufigere Änderungen | [Static Reference Data Service](/microservices/database-patterns/static-reference-data-service.md) |
+| Mehrere Services brauchen dieselben, praktisch unveränderlichen Referenzdaten (Ländercodes) und Redundanz stört nicht | [15 — Duplicate Static Reference Data](/microservices/datenmigration-patterns-shopmax.md#15-duplicate-static-reference-data) |
+| Redundanz ist nicht akzeptabel, ein eigener Service wäre Overkill | [16 — Static Dedicated Reference Data Schema](/microservices/datenmigration-patterns-shopmax.md#16-static-dedicated-reference-data-schema) |
+| Alle Services nutzen dieselbe Programmiersprache | [17 — Static Reference Data Library](/microservices/datenmigration-patterns-shopmax.md#17-static-reference-data-library) |
+| Polyglotter Stack (mehrere Programmiersprachen) oder häufigere Änderungen | [4 — Static Reference Data Service](/microservices/datenmigration-patterns-shopmax.md#4-static-reference-data-service) |
 
 ---
 
-## Alle Einzelpatterns im Überblick
+## Alle Patterns im Überblick
 
-Die folgende Tabelle listet **jedes** Pattern mit seinem Zweck in einem Satz. Für die
-Details, das "Wann"/"Wann eher nicht" und Code-Beispiele siehe die jeweils verlinkte Datei.
+Jedes der 17 nummerierten Patterns hat in
+[Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md) eine
+eigene Karte mit Ausgangslage, Migrationsschritten, Ergebnis, Grafik und der Einordnung
+Migration-only vs. Dauerlösung.
 
 ### A. Zugriff über Service-Grenzen, ohne die Datenbank aufzuteilen
 
-| Pattern | Zweck in einem Satz |
-|---|---|
-| [Database View](/microservices/database-patterns/database-view.md) | Stellt Daten als View statt als Tabelle bereit, damit sich das dahinterliegende Schema noch ändern kann, ohne den Vertrag nach außen zu brechen. |
-| [Database-as-a-Service Interface](/microservices/database-patterns/database-as-a-service-interface.md) | Eine dedizierte Read-Only-Datenbank als Endpunkt für Clients (z.B. Legacy-Systeme), getrennt von der internen Service-DB. |
-| [Database Wrapping Service](/microservices/database-patterns/database-wrapping-service.md) | Ein Service "umwickelt" eine bestehende Datenbank, damit Zugriffe nur noch über die API laufen und die DB nicht mehr direkt verändert wird. |
-| [Aggregate Exposing Monolith](/microservices/database-patterns/aggregate-exposing-monolith.md) | Der Monolith stellt Daten über API oder Event-Stream bereit, während er noch die Datenhoheit hat. |
-| [Change Data Ownership](/microservices/database-patterns/change-data-ownership.md) | Ein neuer Service übernimmt ab sofort die Schreibhoheit für ein Datum — alle anderen greifen nur noch lesend zu. |
-| [Synchronize Data in Application](/microservices/database-patterns/synchronize-data-in-application.md) | Vier-Schritte-Rezept, um historische *und* laufende Daten schrittweise vom alten ins neue Schema zu überführen. |
-| [Tracer Write](/microservices/database-patterns/tracer-write.md) | Wendet Synchronize Data in Application wiederholt an — Tabelle für Tabelle, statt die ganze Datenbank in einem Rutsch umzuziehen. |
+| # | Pattern | Zweck in einem Satz |
+|---|---|---|
+| 11 | Database View | Stellt Daten als View statt als Tabelle bereit, damit sich das dahinterliegende Schema noch ändern kann, ohne den Vertrag nach außen zu brechen. |
+| 12 | Database-as-a-Service Interface | Eine dedizierte Read-Only-Datenbank als Endpunkt für Clients (z.B. Legacy-Systeme), getrennt von der internen Service-DB. |
+| 13 | Database Wrapping Service | Ein Service "umwickelt" eine bestehende Datenbank, damit Zugriffe nur noch über die API laufen und die DB nicht mehr direkt verändert wird. |
+| 14 | Aggregate Exposing Monolith | Der Monolith stellt Daten über API oder Event-Stream bereit, während er noch die Datenhoheit hat. |
+| 2 | Change Data Ownership | Ein neuer Service übernimmt ab sofort die Schreibhoheit für ein Datum — alle anderen greifen nur noch lesend zu. |
+| 9 | Synchronize Data in Application | Vier-Schritte-Rezept, um historische *und* laufende Daten schrittweise vom alten ins neue Schema zu überführen. |
+| 10 | Tracer Write | Wendet Synchronize Data in Application wiederholt an — Tabelle für Tabelle, statt die ganze Datenbank in einem Rutsch umzuziehen. |
 
 ### B. Datenbank wirklich aufteilen
 
-| Pattern | Zweck in einem Satz |
-|---|---|
-| [Repository per Bounded Context](/microservices/database-patterns/repository-per-bounded-context.md) | Pro Bounded Context ein eigener Repository-Layer im Code — Vorbereitung, bevor die Datenbank dahinter aufgeteilt wird. |
-| [Database per Bounded Context](/microservices/database-patterns/database-per-bounded-context.md) | Eigenes Schema pro Bounded Context, auch wenn alles noch im selben Deployment läuft. |
-| [Monolith as Data Access Layer](/microservices/database-patterns/monolith-as-data-access-layer.md) | Ein neuer Service hat noch keine eigene DB und greift über eine schmale API auf den Monolithen zu. |
-| [Multischema Storage](/microservices/database-patterns/multischema-storage.md) | Der Service speichert neue Daten schon selbst, holt ältere/noch nicht migrierte Daten weiterhin vom Monolithen. |
-| [Split Table](/microservices/database-patterns/split-table.md) | Eine Tabelle mit zwei fachlichen Verantwortlichkeiten wird spaltenweise auf zwei Zieltabellen aufgeteilt. |
-| [Move Foreign Key Relationship to Code](/microservices/database-patterns/move-foreign-key-relationship-to-code.md) | Löst einen physischen Foreign Key auf eine wandernde Tabelle in eine Anwendungsvalidierung auf. |
+| # | Pattern | Zweck in einem Satz |
+|---|---|---|
+| 5 | Repository per Bounded Context | Pro Bounded Context ein eigener Repository-Layer im Code — Vorbereitung, bevor die Datenbank dahinter aufgeteilt wird. |
+| 6 | Database per Bounded Context | Eigenes Schema pro Bounded Context, auch wenn alles noch im selben Deployment läuft. |
+| 7 | Monolith as Data Access Layer | Ein neuer Service hat noch keine eigene DB und greift über eine schmale API auf den Monolithen zu. |
+| 8 | Multischema Storage | Der Service speichert neue Daten schon selbst, holt ältere/noch nicht migrierte Daten weiterhin vom Monolithen. |
+| 1 | Split Table | Eine Tabelle mit zwei fachlichen Verantwortlichkeiten wird spaltenweise auf zwei Zieltabellen aufgeteilt. |
+| 3 | Move Foreign Key Relationship to Code | Löst einen physischen Foreign Key auf eine wandernde Tabelle in eine Anwendungsvalidierung auf. |
 
 ### C. Gemeinsam genutzte, selten sich ändernde Referenzdaten
 
-| Pattern | Zweck in einem Satz |
-|---|---|
-| [Duplicate Static Reference Data](/microservices/database-patterns/duplicate-static-reference-data.md) | Jeder Service hält seine eigene Kopie (z.B. Ländercodes) — redundant, aber unkritisch bei seltenen Änderungen. |
-| [Static Dedicated Reference Data Schema](/microservices/database-patterns/static-dedicated-reference-data-schema.md) | Ein eigenes, gemeinsam genutztes Schema/DB nur für Referenzdaten, auf das alle direkt zugreifen. |
-| [Static Reference Data Library](/microservices/database-patterns/static-reference-data-library.md) | Referenzdaten wandern in eine eingebundene Bibliothek statt in eine Datenbank. |
-| [Static Reference Data Service](/microservices/database-patterns/static-reference-data-service.md) | Ein eigener REST-Service für Referenzdaten (z.B. Country-Code-Service). |
+| # | Pattern | Zweck in einem Satz |
+|---|---|---|
+| 15 | Duplicate Static Reference Data | Jeder Service hält seine eigene Kopie (z.B. Ländercodes) — redundant, aber unkritisch bei seltenen Änderungen. |
+| 16 | Static Dedicated Reference Data Schema | Ein eigenes, gemeinsam genutztes Schema/DB nur für Referenzdaten, auf das alle direkt zugreifen. |
+| 17 | Static Reference Data Library | Referenzdaten wandern in eine eingebundene Bibliothek statt in eine Datenbank. |
+| 4 | Static Reference Data Service | Ein eigener REST-Service für Referenzdaten (z.B. Country-Code-Service). |
 
-### D. ShopMax wendet jedes Pattern einzeln an
+(Nummern folgen der Reihenfolge in der ShopMax-Datei, nicht der Kategorie — Anker oben
+verlinken direkt in den passenden Abschnitt.)
 
-Für alle 18 Patterns aus A–C gibt es eine eigene, in ShopMax verankerte Anwendungskarte
-(Ausgangslage, Migrationsschritte, Ergebnis, Grafik, Einordnung Migration-only vs.
-Dauerlösung): [Database Patterns anhand
-ShopMax](/microservices/datenmigration-patterns-shopmax.md).
-
-### E. Ausgearbeitete Praxisbeispiele (Migration Schritt für Schritt)
+### D. Ausgearbeitete Praxisbeispiele (Migration Schritt für Schritt)
 
 Kombinieren mehrere der obigen Patterns zu einem vollständigen, durchgerechneten
-Migrationsplan am ShopMax-Beispiel — der nächste Schritt, nachdem die Einzelpatterns aus
-Abschnitt D bekannt sind:
+Migrationsplan am ShopMax-Beispiel — der nächste Schritt, nachdem die Einzelpatterns bekannt
+sind:
 
 | Beispiel | Szenario | Eingesetzte Patterns |
 |---|---|---|
@@ -170,6 +173,5 @@ Abschnitt D bekannt sind:
 
 ## Siehe auch
 
-  * [Alle Einzelpattern-Dateien](/microservices/database-patterns/)
   * [Database Patterns anhand ShopMax](/microservices/datenmigration-patterns-shopmax.md)
   * [Umgang mit Transaktionen (Saga Pattern)](/microservices/databases/patterns/database-per-service/handling-of-transactions.md)

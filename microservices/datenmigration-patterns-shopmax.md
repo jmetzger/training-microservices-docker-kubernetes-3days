@@ -1,10 +1,10 @@
 # Database Patterns anhand ShopMax
 
-Ergaenzt die abstrakten Pattern-Definitionen unter
-[microservices/database-patterns/](/microservices/database-patterns/) um ein durchgehendes
-Anwendungsbeispiel. Prinzip durchgehend: **Database per Service** ist das Ziel, die
-einzelnen Patterns sind die Werkzeuge, um dorthin zu migrieren. Fokus jeder Karte:
-**wie laeuft die Migration ab**, nicht nur "was ist das Pattern".
+Zeigt alle Database-Migration-Patterns direkt am ShopMax-Beispiel — keine losgeloeste
+abstrakte Definition, sondern jedes Pattern anhand einer konkreten ShopMax-Ausgangslage.
+Prinzip durchgehend: **Database per Service** ist das Ziel, die einzelnen Patterns sind
+die Werkzeuge, um dorthin zu migrieren. Fokus jeder Karte: **wie laeuft die Migration ab**,
+nicht nur "was ist das Pattern".
 
 ShopMax-Services (aus der Monolith-schneiden-Uebung): User, Product, Inventory, Cart,
 Order, Payment, Shipping, Notification.
@@ -21,16 +21,18 @@ anderen (📖) sind Nachschlagewerk.
 
 ShopMax startet mit **einer** PostgreSQL-Datenbank, auf die alle Module direkt zugreifen —
 das ist keine Wahl, sondern der Zustand, den der Monolith per Definition hat. Jedes der
-folgenden 18 Patterns ist ein Werkzeug, um sich davon in Richtung Database per Service zu
+folgenden 17 Patterns ist ein Werkzeug, um sich davon in Richtung Database per Service zu
 bewegen — Shared Database steht deshalb hier nicht als gleichwertige Auswahl neben den
-anderen (siehe `microservices/database-patterns/shared-database.md` fuer die zwei
-Ausnahmefaelle, in denen es bewusst als Zwischenzustand vertretbar bleibt: reine
-Referenzdaten-Lese-Zugriffe, oder ein Service bietet seine DB absichtlich als Endpunkt an —
-dafuer aber besser gleich Pattern 12 (Database-as-a-Service Interface) statt rohem DB-Zugriff).
+anderen. Zwei Ausnahmefaelle, in denen ein geteilter Zugriff bewusst laenger bestehen
+bleibt, aber kontrolliert statt roh: reine Referenzdaten-Lese-Zugriffe, oder ein Service
+bietet seine DB absichtlich als Endpunkt an — dafuer aber besser gleich Pattern 12
+(Database-as-a-Service Interface) statt rohem DB-Zugriff.
 
 ---
 
-## 1. Split Table 🔴 Live
+## 1. Split Table
+
+**🔴 Live-Pattern**
 
 **Kategorie:** B — Datenbank wirklich aufteilen | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** Product-Service vs. Inventory-Service (real aus ShopMax ableitbar)
@@ -91,7 +93,9 @@ Tabelle sperrten.
 
 ---
 
-## 2. Change Data Ownership 🔴 Live
+## 2. Change Data Ownership
+
+**🔴 Live-Pattern**
 
 **Kategorie:** A — Zugriff ueber Service-Grenzen, ohne die Datenbank aufzuteilen | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** Inventory-Service uebernimmt Schreibhoheit fuer Lagerbestand (Anschluss an Pattern 1)
@@ -139,7 +143,9 @@ die physische Trennung (Pattern 1) kann sogar vorher oder nachher passieren.
 
 ---
 
-## 3. Move Foreign Key Relationship to Code 🔴 Live
+## 3. Move Foreign Key Relationship to Code
+
+**🔴 Live-Pattern**
 
 **Kategorie:** B — Datenbank wirklich aufteilen | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** `order_items.product_id` verliert den Foreign Key auf `products`, als der
@@ -199,7 +205,9 @@ statt vorher in Ruhe getestet zu werden.
 
 ---
 
-## 4. Static Reference Data Service 🔴 Live
+## 4. Static Reference Data Service
+
+**🔴 Live-Pattern**
 
 **Kategorie:** C — Gemeinsam genutzte, selten sich aendernde Referenzdaten | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** Waehrungscodes/Laendercodes, gebraucht von Order-, Payment- und
@@ -254,7 +262,9 @@ keine Kleinigkeit.
 
 ---
 
-## 5. Repository per Bounded Context 🔴 Live
+## 5. Repository per Bounded Context
+
+**🔴 Live-Pattern**
 
 **Kategorie:** B | **Einordnung:** Migration only (Vorstufe, wird durch Pattern 6 abgeloest)
 **ShopMax-Fall:** Vorbereitung fuer den Bestellprozess-Split (real,
@@ -277,7 +287,9 @@ Bounded Context gehoeren — Voraussetzung fuer Pattern 6 und jede weitere physi
 
 ---
 
-## 6. Database per Bounded Context 📖 Referenz
+## 6. Database per Bounded Context
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** B | **Einordnung:** Beides möglich — Vorstufe zum physischen Split, kann aber
 auch dauerhaft bleiben, wenn ein Context nie ein eigener Service wird
@@ -301,7 +313,9 @@ weil die Grenze längst existiert.
 
 ---
 
-## 7. Monolith as Data Access Layer 📖 Referenz
+## 7. Monolith as Data Access Layer
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** B | **Einordnung:** Migration only — ausdruecklich befristet, siehe Nachteil unten
 **ShopMax-Fall:** Shipping-Service entsteht neu, hat noch keine eigene DB
@@ -324,7 +338,9 @@ Zwischenzustand, kein Zielbild.
 
 ---
 
-## 8. Multischema Storage 📖 Referenz
+## 8. Multischema Storage
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** B | **Einordnung:** Migration only — explizit Uebergangsphase, kein Zielbild
 **ShopMax-Fall:** Shipping-Service haelt neue Sendungen selbst, alte noch
@@ -347,7 +363,9 @@ und nur noch eine Quelle uebrig bleibt.
 
 ---
 
-## 9. Synchronize Data in Application 🔴 Live
+## 9. Synchronize Data in Application
+
+**🔴 Live-Pattern**
 
 **Kategorie:** A | **Einordnung:** Migration only — ist der Mechanismus selbst, kein Endzustand
 **ShopMax-Fall:** die vier Schritte, konkret am Notification-Service-Fall
@@ -373,7 +391,9 @@ rueckrollbar. Details inkl. SQL und Outbox-Absicherung: siehe verlinkte Datei.
 
 ---
 
-## 10. Tracer Write 🔴 Live
+## 10. Tracer Write
+
+**🔴 Live-Pattern**
 
 **Kategorie:** A | **Einordnung:** Migration only — wendet Pattern 9 wiederholt an, einmal pro Tabelle statt einmal fuer die ganze Datenbank, kein Endzustand
 **ShopMax-Fall:** die Reihenfolge im Bestellprozess-Split (real, bereits
@@ -409,7 +429,9 @@ angefasst wurde. Details zur Reihenfolge-Begruendung: siehe verlinkte Datei.
 
 ---
 
-## 11. Database View 🔴 Live
+## 11. Database View
+
+**🔴 Live-Pattern**
 
 **Kategorie:** A | **Einordnung:** meist Migration only — kann als bewusster Kompromiss bleiben,
 wenn der volle Split nie kommt, ist aber nicht als Dauerloesung gedacht
@@ -436,7 +458,9 @@ echte API (und spaeter Change Data Ownership) die View, statt sie dauerhaft zu p
 
 ---
 
-## 12. Database-as-a-Service Interface 📖 Referenz
+## 12. Database-as-a-Service Interface
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** A | **Einordnung:** Dauerlösung möglich — solange der Legacy-Client SQL braucht
 **ShopMax-Fall:** Legacy-BI-Tool fuer Bestellreports (erfunden — kein
@@ -467,7 +491,9 @@ Order-Service-DB. Genau das braucht das Legacy-Tool, weil es nur SQL spricht, ke
 
 ---
 
-## 13. Database Wrapping Service 📖 Referenz
+## 13. Database Wrapping Service
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** A | **Einordnung:** Beides möglich — Zwischenschritt vor vollem Split, oder
 Dauerlösung, wenn die DB gar nicht wandern soll, nur kontrolliert bleiben
@@ -491,7 +517,9 @@ unbemerkt andere Module brechen.
 
 ---
 
-## 14. Aggregate Exposing Monolith 📖 Referenz
+## 14. Aggregate Exposing Monolith
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** A | **Einordnung:** Migration only — explizit Uebergangsphase, siehe Ergebnis unten
 **ShopMax-Fall:** Shipping-Service in der Fruehphase, bevor er Ownership
@@ -515,7 +543,9 @@ ist keine Dauerloesung.
 
 ---
 
-## 15. Duplicate Static Reference Data 📖 Referenz
+## 15. Duplicate Static Reference Data
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** C | **Einordnung:** Dauerlösung
 **ShopMax-Fall:** Versandmethoden-Codes (STANDARD, EXPRESS, PICKUP), real
@@ -538,7 +568,9 @@ hier mit "nein" beantwortet — bei Steuersaetzen mit "ja, sofort, und es kostet
 
 ---
 
-## 16. Static Dedicated Reference Data Schema 📖 Referenz
+## 16. Static Dedicated Reference Data Schema
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** C | **Einordnung:** Dauerlösung möglich — oder Zwischenschritt zu Pattern 4,
 je nachdem wie kritisch die Konsistenzanforderung wird
@@ -563,7 +595,9 @@ Umstieg auf Pattern 4 (Static Reference Data Service) mit echter API statt SQL-Z
 
 ---
 
-## 17. Static Reference Data Library 📖 Referenz
+## 17. Static Reference Data Library
+
+**📖 Referenz-Pattern**
 
 **Kategorie:** C | **Einordnung:** Dauerlösung — solange der Stack einsprachig bleibt
 **ShopMax-Fall:** Bestellstatus-Codes als gemeinsame Java-Bibliothek (real,
@@ -642,8 +676,8 @@ haengen zusammen, obwohl nur 5 als Live-Pattern markiert ist):
 - ✅ 7 Monolith as Data Access Layer — `pattern-monolith-as-data-access-layer-shopmax.svg` (API statt Direktzugriff)
 - ✅ 8 Multischema Storage — `pattern-multischema-storage-shopmax.svg` (zwei Quellen nach Stichtag)
 
-Und die restlichen Referenz-Patterns (12–17) haben jetzt ebenfalls eine SVG — damit haben
-alle 18 Patterns eine Grafik, keins mehr nur Text:
+Und die restlichen Referenz-Patterns (12–17) haben jetzt ebenfalls eine SVG — damit hat
+jedes der 17 Patterns eine Grafik, keins mehr nur Text:
 
 - ✅ 12 Database-as-a-Service Interface — `pattern-database-as-a-service-interface-shopmax.svg` (CDC + echte SQL-Verbindung, kein REST)
 - ✅ 13 Database Wrapping Service — `pattern-database-wrapping-service-shopmax.svg` (mehrere Direktzugriffe vs. eine API-Schicht)

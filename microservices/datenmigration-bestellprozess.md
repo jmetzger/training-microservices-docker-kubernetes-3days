@@ -113,7 +113,8 @@ Das ist kein Migrationsproblem, sondern ein reines "Tabellen gemeinsam kopieren"
 **Bereits gelöst (Referenz auf frühere Phase):** `order_items.product_id` zeigte ursprünglich
 per Foreign Key auf `products`. Als der Produkt-Service in Phase 2 extrahiert wurde, musste
 genau dieser Constraint zuerst mit **Move Foreign Key Relationship to Code**
-(siehe [Move Foreign Key Relationship to Code](/microservices/database-patterns/move-foreign-key-relationship-to-code.md)) aufgelöst werden —
+(siehe [Pattern 3 — Move Foreign Key Relationship to
+Code](/microservices/datenmigration-patterns-shopmax.md#3-move-foreign-key-relationship-to-code)) aufgelöst werden —
 sonst hätte `products` nie in eine eigene Datenbank wandern können, solange `order_items` noch
 im selben Schema lag. Das Muster ist hier bereits bekannt; es wiederholt sich weiter unten für
 `payments`.
@@ -351,7 +352,7 @@ bequemsten wäre.
 
 ## Verwandte Patterns
 
-- **[Move Foreign Key Relationship to Code](/microservices/database-patterns/move-foreign-key-relationship-to-code.md)** —
+- **[Pattern 3 — Move Foreign Key Relationship to Code](/microservices/datenmigration-patterns-shopmax.md#3-move-foreign-key-relationship-to-code)** —
   der Kernschritt, um überhaupt erst physisch trennen zu können.
 - **[Datenmigration: Notification Service](/microservices/datenmigration-notification-service.md)** —
   dieselbe Backfill/Outbox-Mechanik für den einfachen Fall (eine Tabelle, klare Richtung).
