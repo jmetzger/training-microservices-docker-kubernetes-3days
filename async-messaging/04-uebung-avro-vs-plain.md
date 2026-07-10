@@ -4,6 +4,15 @@
 **Level:** Fortgeschritten
 **Stack:** Java 17, Maven, Kafka, Confluent Schema Registry, Avro, Kubernetes
 
+> **Node-Bedarf:** Getestet mit 7 Teilnehmern + Trainer (8 parallele Schema-Registry-
+> Instanzen) auf einem Node-Pool mit Autoscaling **3-8 Nodes** (`s-2vcpu-4gb`, aktuell
+> 8 Nodes das Maximum). Im Test reichten durchgehend **3 Nodes** — kein Autoscaling-Event
+> ausgeloest, Speicherauslastung lag bei 65-83% pro Node. Pro Teilnehmer braucht die
+> Schema Registry ~150-250MB RAM (durch `SCHEMA_REGISTRY_HEAP_OPTS` und `resources.limits`
+> in Teil 2.1 gedeckelt) plus kurzlebige Producer/Consumer-Pods (~50-100MB, nur Sekunden
+> aktiv). Faustregel: **bis zu ~10 Teilnehmer pro 3 Nodes dieser Groesse**, danach
+> uebernimmt der Cluster-Autoscaler automatisch bis zum Maximum von 8 Nodes.
+
 ---
 
 ## Lernziel
@@ -56,10 +65,18 @@ obwohl der Kafka-Broker geteilt wird.
    └──────────────────┘ └──────────────────┘ └──────────────────┘
 ```
 
-Wichtig: Da alle Teilnehmer denselben Kafka-Broker nutzen, muessen sowohl das
-**interne Schema-Registry-Topic** (`SCHEMA_REGISTRY_KAFKASTORE_TOPIC`) als auch
-**deine eigenen Kafka-Topics** mit deinem Namen/Namespace praefixiert werden — sonst
-kollidieren Schema-IDs und Nachrichten zwischen Teilnehmern.
+Wichtig: Da alle Teilnehmer denselben Kafka-Broker nutzen, muessen **drei** Dinge pro
+Teilnehmer eindeutig sein — sonst kollidieren Schema-IDs und Nachrichten zwischen
+Teilnehmern, oder die Schema Registry crasht direkt beim Start:
+
+- **`SCHEMA_REGISTRY_KAFKASTORE_TOPIC`** — das interne Speicher-Topic fuer Schemas
+- **`SCHEMA_REGISTRY_SCHEMA_REGISTRY_GROUP_ID`** — die Kafka-Consumer-Gruppe fuer die
+  Leader-Election zwischen mehreren Schema-Registry-Instanzen. **Ohne diese Einstellung
+  ist der Default schlicht `"schema-registry"` — bei mehreren Teilnehmern auf demselben
+  Kafka-Broker joinen dann alle dieselbe Gruppe, was zu einem sofortigen Crash fuehrt**
+  (`IllegalStateException: The schema registry group contained multiple members
+  advertising the same URL`)
+- **deine eigenen Kafka-Topics** (`${NS}-orders-plain`, `${NS}-orders-avro`)
 
 ### Alle Teilnehmer gleichzeitig
 
@@ -94,7 +111,7 @@ async-messaging/uebung-avro-vs-plain/
 └── src/main/resources/
     ├── order-v1.avsc              # id, product, quantity
     ├── order-v2.avsc              # + optionales Feld "customer" (default: null) -> kompatibel
-    └── order-v3-incompatible.avsc # "quantity" von int auf string geaendert -> inkompatibel
+    └── order-v3-incompatible.avsc # "quantity" in "qty" umbenannt -> inkompatibel (Pflichtfeld ohne default)
 ```
 
 Ein fertiges Image liegt bereits auf Docker Hub: `dockertrainereu/kafka-schema-demo:1.0`
@@ -105,6 +122,39 @@ cd async-messaging/uebung-avro-vs-plain
 docker build -t dockertrainereu/kafka-schema-demo:1.0 .
 docker push dockertrainereu/kafka-schema-demo:1.0
 ```
+
+### Wichtige Abhaengigkeiten (`pom.xml`)
+
+```xml
+<dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-clients</artifactId>
+    <version>3.8.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.avro</groupId>
+    <artifactId>avro</artifactId>
+    <version>1.11.3</version>
+</dependency>
+<dependency>
+    <groupId>io.confluent</groupId>
+    <artifactId>kafka-avro-serializer</artifactId>
+    <version>7.7.1</version>
+</dependency>
+```
+
+| Dependency | Wofuer |
+|---|---|
+| `kafka-clients` | `KafkaProducer`/`KafkaConsumer` — reicht allein fuer den **PlainProducer/PlainConsumer** (kein Avro, keine Registry noetig) |
+| `avro` | Stellt `Schema`, `GenericRecord`, `GenericData.Record` — das In-Memory-Datenmodell fuer Avro-Nachrichten, unabhaengig von Kafka |
+| `kafka-avro-serializer` (Confluent) | Bringt `KafkaAvroSerializer`/`KafkaAvroDeserializer` und den `SchemaRegistryClient` — das ist die Bruecke, die bei jedem `send()`/`poll()` automatisch mit der Schema Registry spricht |
+
+Wichtig: `kafka-avro-serializer` liegt nicht in Maven Central, sondern im Confluent-Repository
+(`https://packages.confluent.io/maven/`) — das steht im `<repositories>`-Block der `pom.xml`.
+Fehlt dieser Eintrag, bricht `mvn package` mit "Could not find artifact io.confluent:..." ab.
+
+Der `maven-shade-plugin` baut daraus ein einziges Fat-Jar mit `Main.class` als Einstiegspunkt
+(`app.jar`), damit im Dockerfile kein Klassenpfad zusammengesetzt werden muss.
 
 ---
 
@@ -145,7 +195,7 @@ if (matcher.find()) {
 Wenn der Producer das Feld umbenennt, findet der Consumer es schlicht nicht mehr.
 Es gibt keinen Fehler, keine Warnung — nur eine leere Stelle im Output.
 
-### AvroProducer — Schema wird bei jedem Lauf zur Registry angemeldet
+### AvroProducer — warum "bei jedem Schritt" ein Schema registriert wird
 
 ```java
 Properties props = new Properties();
@@ -160,10 +210,24 @@ producer.send(new ProducerRecord<>(topic, key, record), (metadata, exception) ->
 });
 ```
 
-Der `KafkaAvroSerializer` registriert das Schema bei jedem Send-Aufruf automatisch bei
-der Registry (oder nutzt die bereits registrierte ID). Ist das neue Schema inkompatibel
-zur letzten Version des Subjects, schlaegt die Registrierung fehl — **bevor** eine
-Nachricht im Topic landet.
+Das ist der Kernunterschied zum `PlainProducer` und der Grund, warum in **jedem**
+Schritt von Teil 2.4 eine "Registrierung" passiert: der `KafkaAvroSerializer` prueft
+bei **jedem einzelnen `send()`-Aufruf**, ob das Schema des Records der Registry schon
+bekannt ist:
+
+- **Schema unveraendert** (z.B. zweiter Producer-Lauf mit `SCHEMA_VERSION=v1`): der
+  Client hat die Schema-ID bereits im lokalen Cache, es geht kein Netzwerk-Call raus —
+  "Registrierung" ist hier nur eine Cache-Pruefung, keine echte Kafka-Schreiboperation.
+- **Neues, kompatibles Schema** (`v2` — Feld `customer` hinzugefuegt): die Registry
+  vergibt eine neue Schema-ID (Version 2) und schreibt sie ins `_schemas`-Topic.
+- **Neues, inkompatibles Schema** (`v3-incompatible` — Feld `quantity` in `qty`
+  umbenannt): die Registry **lehnt die Registrierung ab**, `producer.send()` wirft eine
+  Exception, **bevor** ueberhaupt eine Nachricht im eigentlichen Topic landet.
+
+Anders als bei einer zentral gepflegten `.avsc`-Datei, die man einmal hochlaedt, ist die
+Registrierung hier also ein **Nebeneffekt jedes Sendevorgangs** — deshalb taucht sie in
+der Uebung wiederholt auf, nicht weil du sie manuell wiederholst, sondern weil der
+Serializer sie bei jedem Producer-Start automatisch ausloest.
 
 ### AvroConsumer — Schema wird pro Nachricht automatisch aufgeloest
 
@@ -333,12 +397,22 @@ spec:
         app: schema-registry
     spec:
       enableServiceLinks: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: schema-registry
+              namespaceSelector: {}
+              topologyKey: kubernetes.io/hostname
       containers:
       - name: schema-registry
         image: confluentinc/cp-schema-registry:7.7.1
         env:
         - name: SCHEMA_REGISTRY_HOST_NAME
-          value: "schema-registry"
+          value: "schema-registry.${NS}.svc.cluster.local"
         - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
           value: "PLAINTEXT://kafka.kafka.svc.cluster.local:9092"
         - name: SCHEMA_REGISTRY_LISTENERS
@@ -347,6 +421,10 @@ spec:
           value: "_schemas-${NS}"
         - name: SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR
           value: "3"
+        - name: SCHEMA_REGISTRY_SCHEMA_REGISTRY_GROUP_ID
+          value: "schema-registry-${NS}"
+        - name: SCHEMA_REGISTRY_KAFKASTORE_TIMEOUT_MS
+          value: "10000"
         - name: SCHEMA_REGISTRY_HEAP_OPTS
           value: "-Xms192m -Xmx192m"
         resources:
@@ -359,6 +437,13 @@ spec:
         ports:
         - containerPort: 8081
           name: http
+        readinessProbe:
+          httpGet:
+            path: /subjects
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 24
 ---
 apiVersion: v1
 kind: Service
@@ -398,7 +483,13 @@ kubectl -n kafka exec -it kafka-controller-0 -- \
 
 ### 2.3 Schritt A — Ohne Registry: Breaking Change ungebremst
 
-**Producer V1:**
+**Producer V1 — was wird gesendet:**
+
+```
+{"id":"o-1","product":"Schraubenzieher","quantity":1}
+{"id":"o-2","product":"Schraubenzieher","quantity":2}
+{"id":"o-3","product":"Schraubenzieher","quantity":3}
+```
 
 ```
 kubectl -n ${NS} run plain-producer --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
@@ -447,7 +538,13 @@ Erwartete Ausgabe:
 ```
 
 **Jetzt der Breaking Change:** Ein zweiter Producer benennt `quantity` in `qty` um —
-niemand prueft das, es gibt keine Registry:
+niemand prueft das, es gibt keine Registry. Was jetzt gesendet wird:
+
+```
+{"id":"o-1","product":"Schraubenzieher","qty":1}
+{"id":"o-2","product":"Schraubenzieher","qty":2}
+{"id":"o-3","product":"Schraubenzieher","qty":3}
+```
 
 ```
 kubectl -n ${NS} delete pod plain-consumer
@@ -463,7 +560,7 @@ kubectl -n ${NS} wait --for=condition=Ready pod/plain-producer-v2 --timeout=60s
 kubectl -n ${NS} logs plain-producer-v2
 ```
 
-Der Producer sendet klaglos weiter: `{"id":"o-1","product":"Schraubenzieher","qty":1}`.
+Der Producer sendet klaglos weiter — kein Fehler, keine Warnung, obwohl das Feld jetzt anders heisst.
 
 ```
 kubectl -n ${NS} delete pod plain-producer-v2
@@ -495,7 +592,14 @@ kubectl -n ${NS} delete pod plain-consumer-v2
 
 ### 2.4 Schritt B — Mit Registry: kompatible Evolution vs. Breaking Change
 
-**Producer V1 (Avro):**
+**Producer V1 (Avro) — was wird gesendet:** dasselbe Datenmodell wie in Schritt A,
+nur diesmal als Avro-Record statt als roher JSON-String:
+
+```
+{"id": "o-1", "product": "Schraubenzieher", "quantity": 1}
+{"id": "o-2", "product": "Schraubenzieher", "quantity": 2}
+{"id": "o-3", "product": "Schraubenzieher", "quantity": 3}
+```
 
 ```
 kubectl -n ${NS} run avro-producer --image=dockertrainereu/kafka-schema-demo:1.0 --restart=Never \
@@ -535,7 +639,13 @@ Erwartete Ausgabe:
 [avro-consumer] gelesen: id=o-3 product=Schraubenzieher quantity=3 customer=<Feld existiert in diesem Schema nicht>
 ```
 
-**Kompatible Schema-Evolution (V2 — neues optionales Feld `customer`):**
+**Kompatible Schema-Evolution (V2 — neues optionales Feld `customer`) — was jetzt
+gesendet wird:**
+
+```
+{"id": "o-1", "product": "Schraubenzieher", "quantity": 1, "customer": "Kunde-o-1"}
+{"id": "o-2", "product": "Schraubenzieher", "quantity": 2, "customer": "Kunde-o-2"}
+```
 
 ```
 kubectl -n ${NS} delete pod avro-consumer
@@ -581,7 +691,12 @@ Erwartete Ausgabe (letzte zwei Zeilen mit `customer`):
 [avro-consumer] gelesen: id=o-2 product=Schraubenzieher quantity=2 customer=Kunde-o-2
 ```
 
-**Inkompatible Aenderung (V3 — `quantity` von int auf string):**
+**Inkompatible Aenderung (V3 — derselbe Fehler wie in Schritt A: `quantity` wird in
+`qty` umbenannt, diesmal aber mit Registry):**
+
+```
+{"id": "o-1", "product": "Schraubenzieher", "qty": 1}
+```
 
 ```
 kubectl -n ${NS} delete pod avro-consumer-v2
@@ -602,13 +717,19 @@ kubectl -n ${NS} get pod avro-producer-v3
 **Erwartete Ausgabe — die Registry blockiert, bevor irgendwas produziert wird:**
 
 ```
-[avro-producer] ABGEBROCHEN: Error registering Avro schema{"type":"record","name":"Order",...,"fields":[...,{"name":"quantity","type":"string"}]}
+[avro-producer] ABGEBROCHEN: Error registering Avro schema{"type":"record","name":"Order","namespace":"de.t3isp.schemademo","fields":[{"name":"id","type":"string"},{"name":"product","type":"string"},{"name":"qty","type":"int"}]}
 ```
 
 ```
 NAME               READY   STATUS   RESTARTS   AGE
 avro-producer-v3   0/1     Error    0          10s
 ```
+
+Der Unterschied zu Schritt A: dort wurde `qty` klaglos durchgereicht. Hier verhindert die
+Registry den Rename schon beim Registrieren — `qty` ist ein neues Pflichtfeld ohne
+`default`, das alte `quantity` verschwindet komplett. Fuer die `BACKWARD`-Kompatibilitaet
+(Registry-Default) muss ein neuer Consumer mit dem **alten** Schema lesbar bleiben — das
+ist hier nicht der Fall, also lehnt die Registry ab.
 
 Registrierte Versionen pruefen (nur V1 und V2 haben es geschafft):
 

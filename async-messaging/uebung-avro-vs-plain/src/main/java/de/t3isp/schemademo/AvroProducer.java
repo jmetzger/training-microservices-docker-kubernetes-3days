@@ -76,8 +76,10 @@ public class AvroProducer {
         GenericData.Record record = new GenericData.Record(schema);
         record.put("id", id);
         record.put("product", "Schraubenzieher");
-        if ("v3-incompatible".equals(schemaVersion)) {
-            record.put("quantity", String.valueOf(quantity));
+        // Derselbe Fehler wie beim PlainProducer (siehe buildJson): "quantity" wird in "qty"
+        // umbenannt, ein Pflichtfeld ohne "default". Hier prueft die Registry das VOR dem Senden.
+        if (schema.getField("qty") != null) {
+            record.put("qty", quantity);
         } else {
             record.put("quantity", quantity);
         }

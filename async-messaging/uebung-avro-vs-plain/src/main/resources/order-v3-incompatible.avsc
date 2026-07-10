@@ -5,6 +5,6 @@
   "fields": [
     {"name": "id", "type": "string"},
     {"name": "product", "type": "string"},
-    {"name": "quantity", "type": "string"}
+    {"name": "qty", "type": "int"}
   ]
 }
