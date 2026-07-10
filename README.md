@@ -136,6 +136,9 @@
       * [End-to-End - e2e - Tests](microservices/tests/06-testing-e2e.md)
       * [Integration in GitLab CI/CD](microservices/tests/07-testing-ci-cd-gitlab.md)
 
+   1. Misc
+      * [Loggen / Prinzpien in Containers + LogAggregierung /dev/stdout fluentd](/misc/log-aggregierung-mit-fluentd-konzept.md)
+
        
 ## Backlog
 
