@@ -1,67 +1,54 @@
-# Strategic Patterns 
+# Strategic Patterns: Monolith schrittweise ablösen
 
-## Pattern: Strangler Fig Application 
+Alle Patterns auf dieser Seite lösen dasselbe Grundproblem: Wie ersetzt man Code in
+einem laufenden System, **ohne** einen riskanten Big-Bang-Rewrite zu riskieren? Die
+Antwort ist immer dieselbe Grundidee — klein schneiden, schrittweise umstellen, jeder
+Schritt einzeln deploybar und rückrollbar — nur an unterschiedlichen Stellen angesetzt:
+am Traffic, am Code, oder am Vertrauen in die neue Implementierung.
 
-  * Technik zum Umschreiben von Systemen 
+Alle vier Patterns werden anhand desselben durchgängigen Beispiels erklärt: **ShopMax**,
+der Online-Shop-Monolith aus der [Übung: Monolith schneiden](/microservices/uebung-monolith-schneiden.md).
 
-### Wie umleitung, z.B.
+## Die vier Patterns im Überblick
 
-  * http proxy 
-  * oder s.u. branch by abstraction
-  * An- und Abschalten mit Feature Toggle 
-  * Über message broker 
+| Pattern | Setzt an bei | Kernfrage | ShopMax-Beispiel |
+|---|---|---|---|
+| **[Strangler Fig](/microservices/strategic-patterns/strangler-fig.md)** | externem Traffic (HTTP, Events) | Wie leite ich Aufrufe schrittweise vom Monolithen zum neuen Service um? | Notification Service herauslösen |
+| **[Branch by Abstraction](/microservices/strategic-patterns/branch-by-abstraction.md)** | internem Code | Wie tausche ich eine Implementierung aus, ohne einen langlebigen Branch zu pflegen? | Lagerbestand-Zugriff auf `InventoryRepository`-Abstraktion umstellen |
+| **[Parallel Run](/microservices/strategic-patterns/parallel-run.md)** | Vertrauen in Korrektheit | Liefert die neue Implementierung für dieselben Eingaben dieselben Ergebnisse? | Versandkosten-Berechnung offline vergleichen |
+| **[Decorating Collaborator](/microservices/strategic-patterns/decorator-collaborator.md)** | Vertrauen + Traffic-Steuerung | Wie beobachte ich den neuen Service live, bevor ich ihm Traffic gebe? | Userdaten-Abfrage schrittweise umstellen |
 
-### http - proxy - Schritte 
+## Wie die Patterns zusammenspielen
 
-  1. Schritt: Proxy einfügen
-  2. Schritt: Funktionalität migrieren 
-  3. Schritt: Aufrufe umleiten
-
-### Message broker
-
-  * Monolith reagiert auf bestimmte Messages bzw. ignoriert bestimmte messages
-  * monolith bekommt bestimmte nachrichten garnicht 
-  * service reagiert auf bestimmte nachrichten 
-
-
-## Pattern: Parallel Run 
-
-  * Service und Teil im Monolith wird parallel ausgeführt
-  * Und es wird überprüft, ob das Ergebnis in beiden Systemn das gleiche ist (z.B. per batch job)
-
-## Pattern: Decorating Collaborator
-
-  * Ansteuerung als nachgelagerten Prozess über einen Proxy
-  * Example: Decorating Collaborator
-
-
-
-## Pattern Branch by Abstraction 
-
-  * Beispiel Notification 
-
-### Schritt 1: Abstraction der zu ersetzendne Funktionalität erstellen
-
-
-### Schritt 2: Ändern sie die Clients der bestehenden Funktionalität so, dass sie die neue Abstraktion verwenden
-
-
-### Schritt 3: Neue Implementierung der Abstraktion 
+Die Patterns schließen sich nicht gegenseitig aus — in der Praxis kombiniert man sie:
 
 ```
-Erstellen Sie eine neue Implementierung der Abstraktion mit der 
-überarbeiteten Funktionalität. 
-
-In unserem Fall wird diese neue Implementierung unseren neuen 
-Mikroservice aufrufen
+1. Branch by Abstraction   Interne Abstraktion einziehen, Aufrufer umstellen
+                                    |
+2. Parallel Run            Neue Implementierung im Hintergrund mitrechnen lassen,
+                            Ergebnisse per Batch-Job gegen die alte pruefen
+                                    |
+3. Decorating Collaborator  Schrittweise echten Traffic auf die neue
+   oder Strangler Fig       Implementierung / den neuen Service umleiten
+                                    |
+4. Aufraeumen               Alte Implementierung aus dem Monolithen entfernen
 ```
 
-### Schritt 4: Abstraktion anpassen -> neue Implementierung
+Nicht jeder Umbau braucht alle vier Stufen — bei einer einfachen, zustandslosen
+Funktion reicht oft Branch by Abstraction direkt gefolgt von einem Umschalt-Flag.
+Bei einer riskanten, business-kritischen Berechnung (Preise, Versandkosten,
+Zahlungslogik) lohnt sich der volle Weg über Parallel Run.
 
-```
-Abstraktion anpassen, dass sie unsere neue Implementierung verwendet
-```
+## Vertiefung: Datenmigration
 
-### Schritt 5: Abstraktion aufräumen und alte Implementierung entfernen 
+Traffic und Code umzustellen ist nur ein Teil der Übung — sobald ein Service seine
+eigene Datenbank bekommen soll, kommt die Frage dazu, wie die Daten migriert werden
+(Backfill, Dual Write, Outbox Pattern). Das wird ausführlich am selben
+ShopMax-Beispiel durchgespielt in
+[Datenmigration: Notification Service](/microservices/datenmigration-notification-service.md).
 
+## Siehe auch
 
+- [Übung: Monolith schneiden — DDD, Bounded Contexts und Strangler Fig](/microservices/uebung-monolith-schneiden.md)
+- [Musterlösung: Migrationsreihenfolge für ShopMax](/microservices/uebung-monolith-schneiden-musterloesung.md)
+- [Weiterführende Schritte: Strangler Proxy, Outbox, Saga](/microservices/uebung-monolith-schneiden-weiterfuehrend.md)

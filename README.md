@@ -113,8 +113,12 @@
   1. Microservices (Vorgehen)
      * [Beginnen mit Datenbank oder Anwendungen]()
 
-  1. Microservices Strategische Patterns (Anwendungen)
-     * [Strategische Patterns](microservices/strategic-patterns.md)
+  1. Strategic Patterns: Monolith schrittweise ablösen
+     * [Überblick: Strangler Fig, Parallel Run, Branch by Abstraction, Decorating Collaborator](microservices/strategic-patterns.md)
+     * [Strangler Fig Pattern](microservices/strategic-patterns/strangler-fig.md)
+     * [Branch by Abstraction](microservices/strategic-patterns/branch-by-abstraction.md)
+     * [Parallel Run](microservices/strategic-patterns/parallel-run.md)
+     * [Decorating Collaborator](microservices/strategic-patterns/decorator-collaborator.md)
 
   1. Übungen: Monolith schneiden
      * [Uebung: Monolith schneiden — DDD, Bounded Contexts und Strangler Fig](microservices/uebung-monolith-schneiden.md)
