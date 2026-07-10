@@ -99,12 +99,30 @@
      * [API-Abfrage über REST-API](microservices/rest-api.md)
      * [Asynchrones Messaging](microservices/asynchronous-messaging.md)
      * [EventBus Implementierungen/Überblick](/microservices/eventbus/overview.md)
-     * [Überblick shared database / database-per-service](microservices/databases/patterns/overview.md)
-     * [Datenbank - Patterns - Teil 1](microservices/database-patterns-teil1.md)
-     * [Datenbank - Patterns - Teil 2](microservices/database-patterns-teil2.md)
 
-  1. Umgang mit Transaktionen
-     * [Saga Überblick](microservices/databases/patterns/database-per-service/handling-of-transactions.md)
+  1. Datenmigration und Database Patterns
+     * [Gesamtübersicht: Alle Database Patterns im Überblick](microservices/databases/patterns/overview.md)
+     * [Shared Database](microservices/database-patterns/shared-database.md)
+     * [Database View](microservices/database-patterns/database-view.md)
+     * [Database-as-a-Service Interface](microservices/database-patterns/database-as-a-service-interface.md)
+     * [Database Wrapping Service](microservices/database-patterns/database-wrapping-service.md)
+     * [Aggregate Exposing Monolith](microservices/database-patterns/aggregate-exposing-monolith.md)
+     * [Change Data Ownership](microservices/database-patterns/change-data-ownership.md)
+     * [Synchronize Data in Application](microservices/database-patterns/synchronize-data-in-application.md)
+     * [Tracer Write](microservices/database-patterns/tracer-write.md)
+     * [Repository per Bounded Context](microservices/database-patterns/repository-per-bounded-context.md)
+     * [Database per Bounded Context](microservices/database-patterns/database-per-bounded-context.md)
+     * [Monolith as Data Access Layer](microservices/database-patterns/monolith-as-data-access-layer.md)
+     * [Multischema Storage](microservices/database-patterns/multischema-storage.md)
+     * [Split Table](microservices/database-patterns/split-table.md)
+     * [Move Foreign Key Relationship to Code](microservices/database-patterns/move-foreign-key-relationship-to-code.md)
+     * [Duplicate Static Reference Data](microservices/database-patterns/duplicate-static-reference-data.md)
+     * [Static Dedicated Reference Data Schema](microservices/database-patterns/static-dedicated-reference-data-schema.md)
+     * [Static Reference Data Library](microservices/database-patterns/static-reference-data-library.md)
+     * [Static Reference Data Service](microservices/database-patterns/static-reference-data-service.md)
+     * [Datenmigration: Notification Service (Backfill, Dual Write, Outbox)](microservices/datenmigration-notification-service.md)
+     * [Datenmigration bei stark verzahnten Foreign Keys (Order/Payment/Customer-Service)](microservices/datenmigration-bestellprozess.md)
+     * [Umgang mit Transaktionen (Saga Überblick)](microservices/databases/patterns/database-per-service/handling-of-transactions.md)
      * [Übung Temporal](/microservices/uebung-saga-temporal.md)
 
   1. Kafka Schema Registry
@@ -112,13 +130,7 @@
      * [Übung: Kafka Schema Registry mit Avro (Kubernetes)](async-messaging/kafka-schema-registry.md)
      * [Übung: Producer/Consumer mit und ohne Schema Registry (Java, Kubernetes)](async-messaging/04-uebung-avro-vs-plain.md)
 
-  1. MicroServices und die Datenbank
-     * [Microservice and Database](microservices/basics/database.md)
-
-  1. Microservices (Vorgehen)
-     * [Beginnen mit Datenbank oder Anwendungen]()
-
-  1. Strategic Patterns: Monolith schrittweise ablösen
+  1. Migration Patterns: Monolith schrittweise ablösen
      * [Überblick: Strangler Fig, Parallel Run, Branch by Abstraction, Decorating Collaborator](microservices/strategic-patterns.md)
      * [Strangler Fig Pattern](microservices/strategic-patterns/strangler-fig.md)
      * [Branch by Abstraction](microservices/strategic-patterns/branch-by-abstraction.md)

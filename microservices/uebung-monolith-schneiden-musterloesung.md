@@ -216,6 +216,11 @@ nicht weil er fachlich zwingend ein eigener Context sein muss.
 - Geteilte DB mit Foreign Keys zu fast allen Tabellen
 - Kritischer Pfad: Ausfall = keine Bestellungen = Umsatzverlust
 
+Wie man so ein Foreign-Key-Netz trotzdem Schritt fuer Schritt entwirrt (statt an einem
+Big-Bang-Cutover zu scheitern), zeigt der Deep-Dive
+[Datenmigration bei stark verzahnten Foreign Keys](/microservices/datenmigration-bestellprozess.md)
+am selben ShopMax-Schema (orders, order_items, payments, shipments, invoices).
+
 ### Migrationsphasen (konkret fuer ShopMax)
 
 ```

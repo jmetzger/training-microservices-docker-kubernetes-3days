@@ -131,28 +131,6 @@ Key an `users` und `orders` in der Monolith-DB. Wie man **Daten** schrittweise m
 gehen, zeigt der Deep-Dive dazu ausführlich anhand desselben ShopMax-Beispiels:
 [Datenmigration: Notification Service](/microservices/datenmigration-notification-service.md).
 
-## Strangler Fig vs. Decorating Collaborator — was ist der Unterschied?
-
-Das ist die Verwechslung, die am häufigsten auftritt: Decorating Collaborator ist
-**kein eigenständiges Konkurrenz-Pattern zu Strangler Fig, sondern eine ausgearbeitete
-Variante des HTTP-Proxy-Bausteins von oben.** Anders gesagt — jeder Decorating-Collaborator-Umbau
-*ist* ein Strangler Fig, aber nicht jeder Strangler Fig braucht die zusätzliche Maschinerie
-von Decorating Collaborator.
-
-| | Strangler Fig (einfache Umleitung) | Decorating Collaborator |
-|---|---|---|
-| Umleitungsmechanismus | Proxy-Regel, Feature-Flag oder Consumer-Wechsel — meist ein einmaliger, grober Schnitt | dieselbe Schaltstelle, aber mit eingebautem Schatten-Modus und feinem Traffic-Ramp (1 % → 10 % → 100 %) |
-| Vergleich alt vs. neu | keiner eingebaut — man verlässt sich auf Tests/Monitoring nach der Umleitung | Live-Vergleich Request für Request, *bevor* überhaupt echter Traffic ankommt |
-| Aufwand | gering — ein Proxy-Rule-Eintrag oder ein Flag reicht | höher — die Schaltstelle muss beide Systeme parallel aufrufen, Antworten vergleichen und den Traffic-Anteil steuern können |
-| Passt gut zu | unkritischer, gut verstandener Funktionalität, bei der ein Fehler schnell auffällt und wenig kostet — bei ShopMax: **Notification** (kein kritischer Pfad, Ausfall = keine E-Mail, keine Bestellungsfehler) | kritischer oder komplexer Funktionalität, bei der ein falsches Ergebnis teuer oder schwer zu bemerken wäre — bei ShopMax: **Userdaten-Abfrage**, die an 20 Stellen im Bestellprozess hängt |
-
-**Faustregel:** Reicht "wir schalten um und beobachten das Monitoring" als Sicherheitsnetz,
-ist die einfache Strangler-Fig-Umleitung genug. Braucht man dagegen belastbare Evidenz
-*vor* der Umleitung — weil ein Fehler teuer, unauffällig oder schwer rückgängig zu machen
-wäre — lohnt sich der Mehraufwand von Decorating Collaborator (ggf. kombiniert mit
-[Parallel Run](/microservices/strategic-patterns/parallel-run.md), um schon vor der
-Umleitung Vertrauen über historische Daten aufzubauen).
-
 ## Warum man das so macht
 
 - **Reversibel** — jede Umleitung (Proxy-Regel, Flag, Consumer-Wechsel) lässt sich mit
@@ -164,16 +142,13 @@ Umleitung Vertrauen über historische Daten aufzubauen).
 - **Reihenfolge ist verhandelbar** — man schneidet zuerst, was am wenigsten Abhängigkeiten
   hat (Notification), und zuletzt, was am meisten kritischen Code bindet (Bestellprozess).
 
-## Weitere verwandte Patterns
+## Verwandte Patterns
 
-Der Vergleich zu Decorating Collaborator steht oben — daneben spielen zwei weitere
-Patterns mit rein:
-
+- **[Decorating Collaborator](/microservices/strategic-patterns/decorator-collaborator.md)** —
+  eine Verfeinerung der HTTP-Proxy-Variante: die Schaltstelle vergleicht zusätzlich
+  Antworten im Schatten-Modus, bevor überhaupt umgeleitet wird.
 - **[Branch by Abstraction](/microservices/strategic-patterns/branch-by-abstraction.md)** —
-  kommt ins Spiel, *bevor* überhaupt eine externe Schnittstelle existiert: eine
-  Abstraktion innerhalb des Monolithen selbst vorbereiten, an der Strangler Fig später
-  ansetzen kann.
+  wird genutzt, *bevor* überhaupt ein externer Service existiert: eine Abstraktion
+  innerhalb des Monolithen selbst vorbereiten.
 - **[Parallel Run](/microservices/strategic-patterns/parallel-run.md)** — statt live
-  umzuleiten, laufen alter und neuer Code parallel und werden per Batch-Job verglichen;
-  liefert die Vertrauensbasis, *bevor* man sich für Strangler Fig oder Decorating
-  Collaborator entscheidet.
+  umzuleiten, laufen alter und neuer Code parallel und werden per Batch-Job verglichen.

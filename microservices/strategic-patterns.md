@@ -1,4 +1,4 @@
-# Strategic Patterns: Monolith schrittweise ablösen
+# Migration Patterns: Monolith schrittweise ablösen
 
 Alle Patterns auf dieser Seite lösen dasselbe Grundproblem: Wie ersetzt man Code in
 einem laufenden System, **ohne** einen riskanten Big-Bang-Rewrite zu riskieren? Die
@@ -44,8 +44,18 @@ Zahlungslogik) lohnt sich der volle Weg über Parallel Run.
 Traffic und Code umzustellen ist nur ein Teil der Übung — sobald ein Service seine
 eigene Datenbank bekommen soll, kommt die Frage dazu, wie die Daten migriert werden
 (Backfill, Dual Write, Outbox Pattern). Das wird ausführlich am selben
-ShopMax-Beispiel durchgespielt in
-[Datenmigration: Notification Service](/microservices/datenmigration-notification-service.md).
+ShopMax-Beispiel durchgespielt:
+
+- **Einfacher Fall** (eine Tabelle, zwei ausgehende Foreign Keys):
+  [Datenmigration: Notification Service](/microservices/datenmigration-notification-service.md)
+- **Schwieriger Fall** (mehrere Tabellen mit Foreign Keys auf dieselbe Tabelle, Aufteilung
+  auf mehrere Services — genau das Szenario, das Bestellprozess laut Musterlösung zum
+  letzten und riskantesten Schnitt macht):
+  [Datenmigration bei stark verzahnten Foreign Keys](/microservices/datenmigration-bestellprozess.md)
+
+Die grundlegenden Patterns dahinter (Database View, Change Data Ownership, Split Table,
+Move Foreign Key Relationship to Code, ...) stehen in der
+[Database Patterns Gesamtübersicht](/microservices/databases/patterns/overview.md).
 
 ## Siehe auch
 
