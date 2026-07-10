@@ -1,0 +1,41 @@
+<svg width="700" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Duplicate Static Reference Data: drei unabhaengige Kopien der Versandmethoden</title>
+<desc>Order-, Shipping- und Payment-Service pflegen jeweils ihre eigene, hartcodierte Kopie der Versandmethoden-Liste. Kein zentraler Service, keine Koordination, weil eine kurzzeitige Abweichung niemandem schadet.</desc>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.th { font-size: 14px; font-weight: 500; fill: #2C2C2A; }
+.ts { font-size: 12px; fill: #5F5E5A; }
+.tc { font-size: 11px; fill: #5F5E5A; }
+.c-blue > rect { fill: #E6F1FB; stroke: #185FA5; stroke-width: 0.5; }
+.c-blue .th { fill: #0C447C; }
+</style>
+
+<text class="th" x="30" y="26">Drei Services, drei unabhaengige Kopien — keine Verbindung dazwischen</text>
+
+<g class="c-blue">
+  <rect x="30" y="50" width="190" height="90" rx="8"/>
+  <text class="th" x="125" y="72" text-anchor="middle">Order-Service</text>
+  <text class="tc" x="125" y="94" text-anchor="middle">enum ShippingMethod</text>
+  <text class="tc" x="125" y="110" text-anchor="middle">STANDARD, EXPRESS,</text>
+  <text class="tc" x="125" y="124" text-anchor="middle">PICKUP</text>
+</g>
+
+<g class="c-blue">
+  <rect x="255" y="50" width="190" height="90" rx="8"/>
+  <text class="th" x="350" y="72" text-anchor="middle">Shipping-Service</text>
+  <text class="tc" x="350" y="94" text-anchor="middle">enum ShippingMethod</text>
+  <text class="tc" x="350" y="110" text-anchor="middle">STANDARD, EXPRESS,</text>
+  <text class="tc" x="350" y="124" text-anchor="middle">PICKUP</text>
+</g>
+
+<g class="c-blue">
+  <rect x="480" y="50" width="190" height="90" rx="8"/>
+  <text class="th" x="575" y="72" text-anchor="middle">Payment-Service</text>
+  <text class="tc" x="575" y="94" text-anchor="middle">enum ShippingMethod</text>
+  <text class="tc" x="575" y="110" text-anchor="middle">STANDARD, EXPRESS,</text>
+  <text class="tc" x="575" y="124" text-anchor="middle">PICKUP</text>
+</g>
+
+<text class="ts" x="30" y="168">Kein Pfeil zwischen den Boxen — bewusst redundant, weil eine kurzzeitige</text>
+<text class="ts" x="30" y="186">Abweichung niemand bemerken wuerde (Kontrast zu Pattern 4: Steuersaetze).</text>
+</svg>

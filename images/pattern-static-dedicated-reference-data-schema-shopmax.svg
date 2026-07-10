@@ -1,0 +1,43 @@
+<svg width="700" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Static Dedicated Reference Data Schema: countries zieht in eine eigene Datenbank um</title>
+<desc>Drei Services greifen weiterhin per direktem SQL auf countries zu, aber nicht mehr auf eine Tabelle im Monolithen, sondern auf eine eigene, dedizierte Datenbank mit eigenem Owner-Team. Zwischenschritt zu Pattern 4.</desc>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.th { font-size: 14px; font-weight: 500; fill: #2C2C2A; }
+.ts { font-size: 12px; fill: #5F5E5A; }
+.tc { font-size: 11px; fill: #5F5E5A; }
+.arr { stroke: #888780; stroke-width: 1.5; fill: none; }
+.c-blue > rect { fill: #E6F1FB; stroke: #185FA5; stroke-width: 0.5; }
+.c-blue .th { fill: #0C447C; }
+.c-gray > rect { fill: #F1EFE8; stroke: #5F5E5A; stroke-width: 0.5; }
+.c-gray .th { fill: #444441; }
+</style>
+<defs>
+  <marker id="b4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<g class="c-blue"><rect x="30" y="30" width="130" height="36" rx="6"/><text class="ts" x="95" y="51" text-anchor="middle" dominant-baseline="central">Order-Service</text></g>
+<g class="c-blue"><rect x="180" y="30" width="130" height="36" rx="6"/><text class="ts" x="245" y="51" text-anchor="middle" dominant-baseline="central">Payment-Service</text></g>
+<g class="c-blue"><rect x="330" y="30" width="130" height="36" rx="6"/><text class="ts" x="395" y="51" text-anchor="middle" dominant-baseline="central">Shipping-Service</text></g>
+
+<line x1="95" y1="66" x2="480" y2="120" class="arr" marker-end="url(#b4)"/>
+<line x1="245" y1="66" x2="480" y2="120" class="arr" marker-end="url(#b4)"/>
+<line x1="395" y1="66" x2="480" y2="120" class="arr" marker-end="url(#b4)"/>
+<text class="tc" x="30" y="95" fill="#5F5E5A">SELECT ... FROM countries — direktes SQL, kein API-Call</text>
+
+<g class="c-gray">
+  <rect x="480" y="100" width="190" height="55" rx="8"/>
+  <text class="th" x="575" y="120" text-anchor="middle">Reference-Data-DB</text>
+  <text class="tc" x="575" y="140" text-anchor="middle">eigenes Owner-Team</text>
+</g>
+
+<text class="ts" x="30" y="195">Besser als Duplikation (eine Wahrheit statt drei), aber immer noch direkter</text>
+<text class="ts" x="30" y="213">DB-Zugriff — bei Encoding-Wechsel folgt der Umstieg auf Pattern 4 (echte API).</text>
+
+<g class="c-gray">
+  <rect x="30" y="225" width="640" height="28" rx="6"/>
+  <text class="tc" x="46" y="243" font-weight="600">Einordnung: Dauerloesung möglich — oder Zwischenschritt zu Pattern 4.</text>
+</g>
+</svg>

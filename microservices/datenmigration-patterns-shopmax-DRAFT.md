@@ -367,7 +367,7 @@ rueckrollbar. Details inkl. SQL und Outbox-Absicherung: siehe verlinkte Datei.
 
 ## 10. Tracer Write 🔴 Live
 
-**Kategorie:** A | **Einordnung:** Migration only — Klammer um Pattern 9, kein Endzustand
+**Kategorie:** A | **Einordnung:** Migration only — wendet Pattern 9 wiederholt an, einmal pro Tabelle statt einmal fuer die ganze Datenbank, kein Endzustand
 **ShopMax-Fall:** die Reihenfolge im Bestellprozess-Split (real, bereits
 vollstaendig ausgearbeitet in `datenmigration-bestellprozess.md`)
 
@@ -422,17 +422,27 @@ echte API (und spaeter Change Data Ownership) die View, statt sie dauerhaft zu p
 Vorbild in ShopMax, aber ein typischer Fall, sobald ein Unternehmen ein bestehendes
 Reporting-Tool hat, das nur SQL spricht)
 
+![Database-as-a-Service Interface: eigene Read-Only-DB fuer das Legacy-BI-Tool](/images/pattern-database-as-a-service-interface-shopmax.svg)
+
 **Ausgangslage:** Das Controlling nutzt ein altes BI-Tool, das nur per SQL gegen eine
 Datenbank connecten kann — keine Moeglichkeit, eine REST-API anzubinden.
 
 **Migration:** Statt das BI-Tool direkt gegen die Order-Service-DB zu verbinden (das waere
 Shared Database durch die Hintertuer), bekommt es eine **eigene, dedizierte Read-Only-DB**.
-Ein CDC-Prozess (aehnlicher Mechanismus wie der Bulk-Sync aus Pattern 9) haelt sie aktuell,
+Ein CDC-Prozess (Change Data Capture — liest die Aenderungen laufend aus dem Transaktionslog
+der Quelldatenbank aus und spielt sie in die Ziel-DB ein, z.B. mit dem Tool Debezium; aehnlicher
+Mechanismus wie der Bulk-Sync aus Pattern 9, nur fortlaufend statt einmalig) haelt sie aktuell,
 sobald sich Order-Daten aendern.
 
 **Ergebnis:** Das BI-Tool bekommt, was es braucht (SQL-Zugriff), ohne dass Order-Service
 seine interne DB-Struktur offenlegen oder Schema-Aenderungen mit dem Controlling abstimmen
 muss — die beiden Datenbanken sind komplett entkoppelt.
+
+**Wichtig zum Begriff "Endpunkt":** Anders als bei Pattern 4 (Static Reference Data Service,
+REST-API mit JSON) ist der "Endpunkt" hier woertlich eine **eigene Datenbank**. Das BI-Tool
+verbindet sich ganz normal per SQL/JDBC/ODBC mit einer eigenen Connection-String/Adresse —
+keine HTTP-API, sondern ein echter Datenbank-Zugriff, nur eben getrennt von der internen
+Order-Service-DB. Genau das braucht das Legacy-Tool, weil es nur SQL spricht, keine REST-Calls.
 
 ---
 
@@ -442,6 +452,8 @@ muss — die beiden Datenbanken sind komplett entkoppelt.
 Dauerlösung, wenn die DB gar nicht wandern soll, nur kontrolliert bleiben
 **ShopMax-Fall:** direkter SQL-Zugriff auf `orders` unterbinden, bevor der
 Bestellprozess-Split beginnt (real, fruehe Vorstufe zu `datenmigration-bestellprozess.md`)
+
+![Database Wrapping Service: direkter SQL-Zugriff auf orders wird unterbunden](/images/pattern-database-wrapping-service-shopmax.svg)
 
 **Ausgangslage:** Mehrere Module im Monolithen (Shipping, Invoicing) greifen historisch
 gewachsen direkt per SQL auf `orders` zu, nicht ueber eine gemeinsame Schnittstelle — jede
@@ -463,6 +475,8 @@ unbemerkt andere Module brechen.
 **Kategorie:** A | **Einordnung:** Migration only — explizit Uebergangsphase, siehe Ergebnis unten
 **ShopMax-Fall:** Shipping-Service in der Fruehphase, bevor er Ownership
 uebernimmt (real, Ergaenzung zu Pattern 7)
+
+![Aggregate Exposing Monolith: Monolith veroeffentlicht ein definiertes Event statt vollem Schemazugriff](/images/pattern-aggregate-exposing-monolith-shopmax.svg)
 
 **Ausgangslage:** Shipping-Service ist gerade erst entstanden. Noch ist unklar, welche
 Felder er von einer Order wirklich braucht — ein Trial-and-Error-Zugriff auf das komplette
@@ -486,6 +500,8 @@ ist keine Dauerloesung.
 **ShopMax-Fall:** Versandmethoden-Codes (STANDARD, EXPRESS, PICKUP), real
 plausibel, im Kontrast zu Pattern 4 (Waehrungscodes)
 
+![Duplicate Static Reference Data: drei unabhaengige Kopien der Versandmethoden](/images/pattern-duplicate-static-reference-data-shopmax.svg)
+
 **Ausgangslage:** Order-, Shipping- und Payment-Service brauchen alle die Liste gueltiger
 Versandmethoden. Anders als Steuersaetze (Pattern 4) aendert sich diese Liste praktisch nie
 und eine falsche Kopie irgendwo waere kein finanzielles Risiko, hoechstens eine kurzzeitig
@@ -508,6 +524,8 @@ je nachdem wie kritisch die Konsistenzanforderung wird
 **ShopMax-Fall:** die Vorstufe zu Pattern 4 — bevor Country-Code-Service
 entstand (erfunden als Zwischenschritt, um die Eskalationsstufe zu zeigen)
 
+![Static Dedicated Reference Data Schema: countries zieht in eine eigene Datenbank um](/images/pattern-static-dedicated-reference-data-schema-shopmax.svg)
+
 **Ausgangslage:** ShopMax hat gerade erkannt, dass die reine Kopie (Pattern 15) fuer
 Laender-/Steuerdaten zu riskant ist — aber ein voller eigener Service wirkt zu diesem
 fruehen Zeitpunkt wie Infrastruktur-Overkill fuer eine einzelne Tabelle.
@@ -529,6 +547,8 @@ Umstieg auf Pattern 4 (Static Reference Data Service) mit echter API statt SQL-Z
 **Kategorie:** C | **Einordnung:** Dauerlösung — solange der Stack einsprachig bleibt
 **ShopMax-Fall:** Bestellstatus-Codes als gemeinsame Java-Bibliothek (real,
 da ShopMax laut Monolith-schneiden-Uebung durchgaengig Java/Spring Boot ist)
+
+![Static Reference Data Library: Bestellstatus-Codes als gemeinsame Java-Bibliothek](/images/pattern-static-reference-data-library-shopmax.svg)
 
 **Ausgangslage:** `order_status`-Werte (NEU, BEZAHLT, VERSENDET, ABGESCHLOSSEN, STORNIERT)
 werden aktuell in Order-, Payment- und Shipping-Service jeweils als eigenes Enum gepflegt —
@@ -610,8 +630,19 @@ haengen zusammen, obwohl nur 5 als Live-Pattern markiert ist):
 - ✅ 7 Monolith as Data Access Layer — `pattern-monolith-as-data-access-layer-shopmax.svg` (API statt Direktzugriff)
 - ✅ 8 Multischema Storage — `pattern-multischema-storage-shopmax.svg` (zwei Quellen nach Stichtag)
 
-Die restlichen 7 Referenz-Patterns (12, 13, 14, 15, 16, 17) haben weiterhin bewusst keine
-SVG — Text reicht dort als Nachschlagewerk.
+Und die restlichen Referenz-Patterns (12–17) haben jetzt ebenfalls eine SVG — damit haben
+alle 18 Patterns eine Grafik, keins mehr nur Text:
+
+- ✅ 12 Database-as-a-Service Interface — `pattern-database-as-a-service-interface-shopmax.svg` (CDC + echte SQL-Verbindung, kein REST)
+- ✅ 13 Database Wrapping Service — `pattern-database-wrapping-service-shopmax.svg` (mehrere Direktzugriffe vs. eine API-Schicht)
+- ✅ 14 Aggregate Exposing Monolith — `pattern-aggregate-exposing-monolith-shopmax.svg` (definiertes Event statt vollem Schema)
+- ✅ 15 Duplicate Static Reference Data — `pattern-duplicate-static-reference-data-shopmax.svg` (drei isolierte Kopien, keine Mitte)
+- ✅ 16 Static Dedicated Reference Data Schema — `pattern-static-dedicated-reference-data-schema-shopmax.svg` (Stern-Topologie, aber SQL statt API)
+- ✅ 17 Static Reference Data Library — `pattern-static-reference-data-library-shopmax.svg` (Dependency statt Netzwerk-Call)
+
+Pattern 15 vs. 16 vs. 4 zeigen bewusst dieselbe Grundfrage (Referenzdaten teilen) mit
+steigender Konsolidierung: keine Mitte (15) → Mitte, aber SQL-Zugriff (16) → Mitte mit
+echter API (4). Der visuelle Vergleich der drei Grafiken nebeneinander macht das greifbar.
 
 ## Offene Fragen zur Bewertung
 

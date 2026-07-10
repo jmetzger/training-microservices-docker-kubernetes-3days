@@ -1,0 +1,45 @@
+<svg width="700" viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Aggregate Exposing Monolith: Monolith veroeffentlicht ein definiertes Event statt vollem Schemazugriff</title>
+<desc>Der Monolith definiert explizit das Event OrderReadyForShipment mit genau den Feldern, die Shipping-Service braucht, statt dem neuen Service Zugriff auf das komplette Schema zu geben.</desc>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.th { font-size: 14px; font-weight: 500; fill: #2C2C2A; }
+.ts { font-size: 12px; fill: #5F5E5A; }
+.tc { font-size: 11px; fill: #5F5E5A; }
+.arr { stroke: #888780; stroke-width: 1.5; fill: none; }
+.c-gray > rect { fill: #F1EFE8; stroke: #5F5E5A; stroke-width: 0.5; }
+.c-gray .th { fill: #444441; }
+.c-purple > rect { fill: #EEEDFE; stroke: #534AB7; stroke-width: 0.5; }
+.c-purple .th { fill: #3C3489; }
+</style>
+<defs>
+  <marker id="b3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<g class="c-gray">
+  <rect x="30" y="60" width="220" height="80" rx="8"/>
+  <text class="th" x="140" y="82" text-anchor="middle">Monolith</text>
+  <text class="tc" x="140" y="102" text-anchor="middle">gesamtes Schema,</text>
+  <text class="tc" x="140" y="118" text-anchor="middle">volle Datenhoheit</text>
+</g>
+
+<line x1="60" y1="60" x2="60" y2="35" stroke="#B5433B" stroke-width="1.5"/>
+<text class="tc" x="70" y="35" fill="#B5433B">kein Trial-and-Error-Zugriff aufs ganze Schema</text>
+
+<line x1="250" y1="100" x2="400" y2="100" class="arr" marker-end="url(#b3)"/>
+
+<g class="c-purple">
+  <rect x="405" y="65" width="260" height="70" rx="8"/>
+  <text class="th" x="425" y="87">Event: OrderReadyForShipment</text>
+  <text class="tc" x="425" y="105">orderId, deliveryAddress, items</text>
+  <text class="tc" x="425" y="121">— nur diese Felder, nicht mehr</text>
+</g>
+
+<line x1="535" y1="135" x2="535" y2="165" class="arr" marker-end="url(#b3)"/>
+<g class="c-gray"><rect x="435" y="170" width="200" height="36" rx="6"/><text class="ts" x="535" y="191" text-anchor="middle" dominant-baseline="central">Shipping-Service</text></g>
+
+<text class="ts" x="30" y="185">Erst wenn der Datenbedarf so explizit</text>
+<text class="ts" x="30" y="203">definiert ist, folgt Change Data Ownership.</text>
+</svg>
